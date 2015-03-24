@@ -1,8 +1,7 @@
 # Name: Jim Ashworth
 # ID: 26164035
 
-# If the last line (main()) is uncommented, when run from the command prompt, 
-# the script will request a file to process.
+# When run from the command prompt, the script will request a file to process.
 # If the provided file does not exist, the script will keep asking.
 # The given XML file is then parsed by xml.etree.ElementTree.parse.
 # If at any point an error is thrown (due to a non-xml file being provided,
@@ -184,4 +183,5 @@ def main():
     except:
         print('Simulation has failed - please try again\n')
         
-# main()
+if __name__=="__main__":
+    main()
