@@ -1,0 +1,36 @@
+#:kivy 1.0.9
+
+<Button>:
+    width: 60
+    size_hint: None, 1
+    font_size: 10
+    halign: 'center'
+    
+<TapeCell>:
+    font_size: 20
+    padding: [5, ( self.height - self.line_height ) / 2]
+    
+<TapeLabel>:
+    font_size: 20
+    halign: 'center'
+    valign: 'middle'
+    
+<TapeUnit>:
+    width: 50
+    size_hint: None, 1
+    
+<Toolbar>:
+    canvas.before:
+        Color:
+            rgba: 0.5, 0.5, 0.5, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    
+<StateMachine>:
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
