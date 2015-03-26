@@ -19,7 +19,7 @@ class Transition(Widget):
         gs = globvars.AllItems['gs']
         self.startpoint = None
         self.startstate = None
-        self.midpoint   = TransitionGrabber(size = (gs, gs))
+        self.midpoint   = TransitionGrabber()
         self.endpoint   = None
         self.endstate   = None
         self.display    = True
@@ -248,6 +248,7 @@ class _StateMachine(FloatLayout):
         t.startstate.highlighted(False)
         if not self.identify_state_in(touch):
             self.remove_widget(t)
+            self.remove_widget(t.midpoint)
             return
         
         t.endpoint = [touch.ud['touched'].center_x, touch.ud['touched'].center_y]
