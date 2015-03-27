@@ -1,10 +1,10 @@
-from kivy.uix.textinput import TextInput
+from inputs import AlphabetTextInput
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
 import globvars
 
-class TapeCell(TextInput):
+class TapeCell(AlphabetTextInput):
     def selected(self, selected):
         if selected:
             self.background_color = [1, 1, 0.5, 1]

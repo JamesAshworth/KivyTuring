@@ -1,15 +1,12 @@
 from kivy.uix.widget import Widget
 from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.graphics import Color, Ellipse, Rectangle, Line, Triangle
 from kivy.uix.label import Label
-from kivy.uix.textinput import TextInput
 from kivy.uix.scatterlayout import ScatterLayout
-from kivy.uix.popup import Popup
-from kivy.clock import Clock
 from math import sqrt, degrees, atan2
 from sys import maxint
+from popups import StateNamer, TransitionIdentifier
 import globvars
 
 class StateLabel(Label):
@@ -18,52 +15,14 @@ class StateLabel(Label):
 class RotateLabel(Label):
     pass
     
-class StateNamer(Popup):
-    def __init__(self, object, *args, **kwargs):
-        super(StateNamer, self).__init__(*args, **kwargs)
-        self.auto_dismiss = False
-        self.title = "State Name?"
-        self.content = BoxLayout()
-        self.content.orientation = 'vertical'
-        self.content.add_widget(Label(height = 30, size_hint = (1, None), text = "Please provide a unique name for this state:"))
-        self.textinput = TextInput(height = 30, size_hint = (1, None), multiline = False)
-        self.textinput.bind(on_text_validate=self.dismiss)
-        self.content.add_widget(self.textinput)
-        self.feedback = Label()
-        self.content.add_widget(self.feedback)
-        self.object = object
-        self.bind(on_dismiss=self.post_process)
-        
-    def open(self, *args, **kwargs):
-        super(StateNamer, self).open(*args, **kwargs)
-        Clock.schedule_once(self.set_focus_text)
-    
-    def post_process(self, instance):
-        if self.textinput.text == "":
-            self.feedback.text = "State name can not be blank"
-            Clock.schedule_once(self.set_focus_text)
-            return True
-        for state in globvars.AllItems['states']:
-            if state == self.object:
-                pass
-            elif state.text == self.textinput.text:
-                self.feedback.text = "State name is not unique"
-                Clock.schedule_once(self.set_focus_text)
-                return True
-        self.object.set_text(self.textinput.text)
-        return False
-        
-    def set_focus_text(self, instance):
-        self.textinput.focus = True
-    
 class TransitionInfo(ScatterLayout):
     def __init__(self, *args, **kwargs):
         super(TransitionInfo, self).__init__(*args, **kwargs)
-        self.label = RotateLabel(text = "info\n\n")
+        self.label = RotateLabel()
         self.add_widget(self.label)
         
     def update_info(self, text):
-        self.label.text = text
+        self.label.text = (text + "\n\n")
 
 class TransitionGrabber(Widget):
     def update(self):
@@ -84,6 +43,13 @@ class Transition(Widget):
         self.endstate   = None
         self.display    = True
         self.complete   = False
+        
+    def edit_info(self):
+        popup = TransitionIdentifier(self)
+        popup.open()
+        
+    def set_info(self, text):
+        self.info.update_info(text)
         
     def line_middle(self):
         gs = globvars.AllItems['gs']
@@ -152,6 +118,7 @@ class Transition(Widget):
         if self.startstate == self.endstate:
             self.midpoint.y += 100
         self.update()
+        self.edit_info()
         globvars.AllItems['stateMachine'].add_widget(self.info)
             
     def midpoints_calc(self):
@@ -334,6 +301,9 @@ class _StateMachine(FloatLayout):
             if self.mode == "delete":
                 touch.ud['touched'].destroy_self()
                 return
+            if self.mode == "edit":
+                touch.ud['touched'].edit_info()
+                return
         
         if self.identify_state_in(touch):
             if self.mode == "final":
@@ -369,6 +339,8 @@ class _StateMachine(FloatLayout):
         self.mode = mode
         display = False
         if mode == "create_t":
+            display = True
+        if mode == "edit":
             display = True
         if mode == "delete":
             display = True
