@@ -21,6 +21,7 @@ class BuildToolbar(BoxLayout):
         self.add_widget(globvars.AllItems['move'])
         self.add_widget(MachineButton(mode = "create_s", text = "Create\n/ Move\nState", selected = False))
         self.add_widget(MachineButton(mode = "create_t", text = "Create\n/ Move\nTransition", selected = False))
+        self.add_widget(MachineButton(mode = "edit", text = "Edit\nState /\nTransition", selected = False))
         self.add_widget(MachineButton(mode = "delete", text = "Delete\nState /\nTransition", selected = False))
         self.add_widget(MachineButton(mode = "final", text = "Set\nFinal\nState", selected = False))
         self.add_widget(CentreButton(text = "Centre\nState\nMachine"))

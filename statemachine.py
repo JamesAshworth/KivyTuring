@@ -1,14 +1,69 @@
 from kivy.uix.widget import Widget
 from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.graphics import Color, Ellipse, Rectangle, Line, Triangle
 from kivy.uix.label import Label
-from math import sqrt
+from kivy.uix.textinput import TextInput
+from kivy.uix.scatterlayout import ScatterLayout
+from kivy.uix.popup import Popup
+from kivy.clock import Clock
+from math import sqrt, degrees, atan2
 from sys import maxint
 import globvars
 
 class StateLabel(Label):
     pass
+    
+class RotateLabel(Label):
+    pass
+    
+class StateNamer(Popup):
+    def __init__(self, object, *args, **kwargs):
+        super(StateNamer, self).__init__(*args, **kwargs)
+        self.auto_dismiss = False
+        self.title = "State Name?"
+        self.content = BoxLayout()
+        self.content.orientation = 'vertical'
+        self.content.add_widget(Label(height = 30, size_hint = (1, None), text = "Please provide a unique name for this state:"))
+        self.textinput = TextInput(height = 30, size_hint = (1, None), multiline = False)
+        self.textinput.bind(on_text_validate=self.dismiss)
+        self.content.add_widget(self.textinput)
+        self.feedback = Label()
+        self.content.add_widget(self.feedback)
+        self.object = object
+        self.bind(on_dismiss=self.post_process)
+        
+    def open(self, *args, **kwargs):
+        super(StateNamer, self).open(*args, **kwargs)
+        Clock.schedule_once(self.set_focus_text)
+    
+    def post_process(self, instance):
+        if self.textinput.text == "":
+            self.feedback.text = "State name can not be blank"
+            Clock.schedule_once(self.set_focus_text)
+            return True
+        for state in globvars.AllItems['states']:
+            if state == self.object:
+                pass
+            elif state.text == self.textinput.text:
+                self.feedback.text = "State name is not unique"
+                Clock.schedule_once(self.set_focus_text)
+                return True
+        self.object.set_text(self.textinput.text)
+        return False
+        
+    def set_focus_text(self, instance):
+        self.textinput.focus = True
+    
+class TransitionInfo(ScatterLayout):
+    def __init__(self, *args, **kwargs):
+        super(TransitionInfo, self).__init__(*args, **kwargs)
+        self.label = RotateLabel(text = "info\n\n")
+        self.add_widget(self.label)
+        
+    def update_info(self, text):
+        self.label.text = text
 
 class TransitionGrabber(Widget):
     def update(self):
@@ -24,6 +79,7 @@ class Transition(Widget):
         self.startpoint = None
         self.startstate = None
         self.midpoint   = TransitionGrabber()
+        self.info       = TransitionInfo(size = (60, 60), size_hint = (None, None))
         self.endpoint   = None
         self.endstate   = None
         self.display    = True
@@ -64,6 +120,16 @@ class Transition(Widget):
         bpoint2[1] -= dx
         return fpoint + bpoint1 + bpoint2
         
+    def rotation_angle(self):
+        points = self.direction_triangle()
+        points[2] += points[4]
+        points[3] += points[5]
+        points[2] /= 2
+        points[3] /= 2
+        dx = points[0] - points[2]
+        dy = points[1] - points[3]
+        return ((degrees(atan2(dy, dx)) + 45) // 90 * 90)
+        
     def update(self):
         pd = globvars.AllItems['linethickness']
         self.canvas.clear()
@@ -71,6 +137,8 @@ class Transition(Widget):
         self.canvas.add(Line(bezier = self.startpoint + self.midpoints_calc() + self.endpoint, width = pd))
         centre = self.line_middle()
         self.canvas.add(Triangle(center = (centre[0] - 10, centre[1] - 10), points = self.direction_triangle()))
+        self.info.pos = (centre[0] - 30, centre[1] - 30)
+        self.info.rotation = self.rotation_angle()
         globvars.AllItems['stateMachine'].remove_widget(self.midpoint)
         if self.display:
             self.midpoint.update()
@@ -84,6 +152,7 @@ class Transition(Widget):
         if self.startstate == self.endstate:
             self.midpoint.y += 100
         self.update()
+        globvars.AllItems['stateMachine'].add_widget(self.info)
             
     def midpoints_calc(self):
         gs = globvars.AllItems['gs']
@@ -127,6 +196,7 @@ class Transition(Widget):
         self.startstate.transitions.remove(self)
         self.endstate.transitions.remove(self)
         globvars.AllItems['stateMachine'].remove_widget(self.midpoint)
+        globvars.AllItems['stateMachine'].remove_widget(self.info)
         globvars.AllItems['stateMachine'].remove_widget(self)
         globvars.AllItems['transitions'].remove(self)
 
@@ -152,9 +222,14 @@ class State(Widget):
         self.finalstatecolour = Color(1, 1, 1)
         self.final = False
         self.transitions = []
-        self.text = ""
-        self.label = StateLabel(pos = self.pos, size = self.size, text = "q", color = [0, 0, 0, 1])
+        self.name = ""
+        self.label = StateLabel(pos = self.pos, size = self.size)
+        self.edit_name()
         self.State_update()
+        
+    def edit_name(self):
+        popup = StateNamer(self)
+        popup.open()
         
     def State_update(self):
         for t in self.transitions:
@@ -267,6 +342,8 @@ class _StateMachine(FloatLayout):
                 touch.ud['touched'].destroy_self()
             if self.mode == "create_t":
                 self.make_transition(touch)
+            if self.mode == "edit":
+                touch.ud['touched'].edit_name()
             return
         
         touch.ud['touched'] = self
