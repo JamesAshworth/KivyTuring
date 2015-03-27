@@ -1,10 +1,14 @@
 from kivy.uix.widget import Widget
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import ScreenManager, Screen
-from kivy.graphics import Color, Ellipse, Rectangle, Line
+from kivy.graphics import Color, Ellipse, Rectangle, Line, Triangle
+from kivy.uix.label import Label
 from math import sqrt
 from sys import maxint
 import globvars
+
+class StateLabel(Label):
+    pass
 
 class TransitionGrabber(Widget):
     def update(self):
@@ -25,11 +29,48 @@ class Transition(Widget):
         self.display    = True
         self.complete   = False
         
+    def line_middle(self):
+        gs = globvars.AllItems['gs']
+        points = self.midpoints_calc()
+        if len(points) == 2:
+            x = self.startpoint[0] / 4 + points[0] / 2 + self.endpoint[0] / 4
+            y = self.startpoint[1] / 4 + points[1] / 2 + self.endpoint[1] / 4
+        else:
+            x = self.startpoint[0] / 16 + points[0] / 4 + points[2] * 3 / 8 + points[4] / 4 + self.endpoint[0] / 16
+            y = self.startpoint[1] / 16 + points[1] / 4 + points[3] * 3 / 8 + points[5] / 4 + self.endpoint[1] / 16
+        return [x, y]
+        
+    def direction_triangle(self):
+        gs = globvars.AllItems['gs']
+        fpoint = self.line_middle()
+        if self.startstate == self.endstate:
+            dx = fpoint[1] - self.startpoint[1] 
+            dy = self.startpoint[0] - fpoint[0]
+        else:
+            dx = self.endpoint[0] - self.startpoint[0]
+            dy = self.endpoint[1] - self.startpoint[1]
+        length = sqrt((dx ** 2) + (dy ** 2))
+        dx *= 10 / length
+        dy *= 10 / length
+        bpoint1 = list(fpoint)
+        fpoint[0] += dx
+        fpoint[1] += dy
+        bpoint1[0] -= dx
+        bpoint1[1] -= dy
+        bpoint2 = list(bpoint1)
+        bpoint1[0] -= dy
+        bpoint1[1] += dx
+        bpoint2[0] += dy
+        bpoint2[1] -= dx
+        return fpoint + bpoint1 + bpoint2
+        
     def update(self):
         pd = globvars.AllItems['linethickness']
         self.canvas.clear()
         self.canvas.add(Color(0, 0, 0))
         self.canvas.add(Line(bezier = self.startpoint + self.midpoints_calc() + self.endpoint, width = pd))
+        centre = self.line_middle()
+        self.canvas.add(Triangle(center = (centre[0] - 10, centre[1] - 10), points = self.direction_triangle()))
         globvars.AllItems['stateMachine'].remove_widget(self.midpoint)
         if self.display:
             self.midpoint.update()
@@ -111,16 +152,21 @@ class State(Widget):
         self.finalstatecolour = Color(1, 1, 1)
         self.final = False
         self.transitions = []
+        self.text = ""
+        self.label = StateLabel(pos = self.pos, size = self.size, text = "q", color = [0, 0, 0, 1])
         self.State_update()
         
     def State_update(self):
         for t in self.transitions:
             t.update_point(self, [self.center_x, self.center_y])
         pd = 2
+        self.remove_widget(self.label)
         self.canvas.clear()
         for i in range(5):
             self.canvas.add(self.colours[i])
             self.canvas.add(Ellipse(pos = (self.x + i * pd, self.y + i * pd), size = (self.width - 2 * i * pd, self.height - 2 * i * pd)))
+        self.label.pos = self.pos
+        self.add_widget(self.label)
         
     def highlighted(self, highlighted):
         if highlighted:
@@ -128,6 +174,10 @@ class State(Widget):
         else:
             self.colours[0] = Color(1, 1, 1)
         self.State_update()
+        
+    def set_text(self, text):
+        self.text = text
+        self.label.text = text
         
     def finalstatetoggle(self):
         self.finalstate(not self.final)
