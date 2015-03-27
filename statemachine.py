@@ -27,14 +27,33 @@ class Transition(Widget):
         
     def update(self):
         pd = globvars.AllItems['linethickness']
-        gs = globvars.AllItems['gs']
         self.canvas.clear()
         self.canvas.add(Color(0, 0, 0))
-        self.canvas.add(Line(bezier = self.startpoint + [self.midpoint.x + (gs / 2), self.midpoint.y + (gs / 2)] + self.endpoint, width = pd))
+        self.canvas.add(Line(bezier = self.startpoint + self.midpoints_calc() + self.endpoint, width = pd))
         globvars.AllItems['stateMachine'].remove_widget(self.midpoint)
         if self.display:
             self.midpoint.update()
             globvars.AllItems['stateMachine'].add_widget(self.midpoint)
+            
+    def finish_transition(self):
+        gs = globvars.AllItems['gs']
+        self.complete = True
+        self.endpoint = [self.endstate.center_x, self.endstate.center_y]
+        self.midpoint.pos = [(self.startpoint[0] + self.endpoint[0] - gs) / 2, (self.startpoint[1] + self.endpoint[1] - gs) / 2]
+        if self.startstate == self.endstate:
+            self.midpoint.y += 100
+        self.update()
+            
+    def midpoints_calc(self):
+        gs = globvars.AllItems['gs']
+        midpoints = [self.midpoint.x + (gs / 2), self.midpoint.y + (gs / 2)]
+        if self.startstate != self.endstate:
+            return midpoints
+        dx = (self.midpoint.x - self.startstate.center_x + (gs / 2)) / 2
+        dy = (self.midpoint.y - self.startstate.center_y + (gs / 2)) / 2
+        midpoint1 = [self.startstate.center_x + dx - dy, self.startstate.center_y + dy + dx]
+        midpoint2 = [self.startstate.center_x + dx + dy, self.startstate.center_y + dy - dx]
+        return midpoint1 + midpoints + midpoint2
         
     def display_mover(self, display):
         self.display = display
@@ -184,8 +203,11 @@ class _StateMachine(FloatLayout):
             
         touch.ud['last'] = [touch.x, touch.y]
             
-        if self.mode == "create_t":
-            if self.identify_transition_on(touch):
+        if self.identify_transition_on(touch):
+            if self.mode == "create_t":
+                return
+            if self.mode == "delete":
+                touch.ud['touched'].destroy_self()
                 return
         
         if self.identify_state_in(touch):
@@ -218,10 +240,11 @@ class _StateMachine(FloatLayout):
             
     def set_mode(self, mode):
         self.mode = mode
+        display = False
         if mode == "create_t":
             display = True
-        else:
-            display = False
+        if mode == "delete":
+            display = True
         for t in globvars.AllItems['transitions']:
             t.display_mover(display)
         
@@ -251,12 +274,10 @@ class _StateMachine(FloatLayout):
             self.remove_widget(t.midpoint)
             return
         
-        t.endpoint = [touch.ud['touched'].center_x, touch.ud['touched'].center_y]
         t.endstate = touch.ud['touched']
+        t.finish_transition()
         t.startstate.transitions.append(t)
         t.endstate.transitions.append(t)
-        t.complete = True
-        t.update()
         globvars.AllItems['transitions'].append(t)
         self.states_to_front()
         
