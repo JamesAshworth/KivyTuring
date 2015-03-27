@@ -1,3 +1,5 @@
+import string
+
 def create():
     global AllItems
     AllItems = {}
@@ -5,3 +7,4 @@ def create():
     AllItems['transitions'] = []
     AllItems['linethickness'] = 2
     AllItems['gs'] = 20 #grabber size
+    AllItems['alphabet'] = string.ascii_lowercase
