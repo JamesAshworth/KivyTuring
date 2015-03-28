@@ -190,11 +190,23 @@ class State(Widget):
         self.transitions = []
         self.name = ""
         self.label = StateLabel(pos = self.pos, size = self.size)
-        self.edit_name()
+        self.default_name()
         self.State_update()
         
     def edit_name(self):
         StateNamer(self).open()
+        
+    def default_name(self):
+        i = 0
+        while self.state_named(str(i)):
+            i += 1
+        self.set_text(str(i))
+        
+    def state_named(self, name):
+        for state in globvars.AllItems['states']:
+            if state.name == name:
+                return True
+        return False
         
     def State_update(self):
         for t in self.transitions:
@@ -216,7 +228,7 @@ class State(Widget):
         self.State_update()
         
     def set_text(self, text):
-        self.text = text
+        self.name = text
         self.label.text = text
         
     def finalstatetoggle(self):

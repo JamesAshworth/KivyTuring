@@ -49,7 +49,7 @@ class StateNamer(CommonPopup):
         for state in globvars.AllItems['states']:
             if state == self.object:
                 pass
-            elif state.text == self.textinput.text:
+            elif state.name == self.textinput.text:
                 self.feedback.text = "State name is not unique"
                 Clock.schedule_once(self.set_focus_text)
                 return True
