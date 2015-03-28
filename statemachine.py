@@ -6,7 +6,7 @@ from kivy.uix.label import Label
 from kivy.uix.scatterlayout import ScatterLayout
 from math import sqrt, degrees, atan2
 from sys import maxint
-from popups import StateNamer, TransitionIdentifier
+from popups import StateNamer, TransitionIdentifier, AlphabetEntry
 import globvars
 
 class StateLabel(Label):
@@ -45,8 +45,7 @@ class Transition(Widget):
         self.complete   = False
         
     def edit_info(self):
-        popup = TransitionIdentifier(self)
-        popup.open()
+        TransitionIdentifier(self).open()
         
     def set_info(self, text):
         self.info.update_info(text)
@@ -195,8 +194,7 @@ class State(Widget):
         self.State_update()
         
     def edit_name(self):
-        popup = StateNamer(self)
-        popup.open()
+        StateNamer(self).open()
         
     def State_update(self):
         for t in self.transitions:
@@ -420,7 +418,7 @@ class _StateMachine(FloatLayout):
         if self.mode == "create_t":
             self.finish_transition(touch)
     
-    def centreMachine(self):
+    def centre_machine(self):
         maxx, maxy, minx, miny = -maxint, -maxint, maxint, maxint
         for state in globvars.AllItems['states']:
             maxx = max(maxx, state.center_x)
@@ -430,6 +428,9 @@ class _StateMachine(FloatLayout):
         avgx = (maxx + minx) / 2
         avgy = (maxy + miny) / 2
         self.move_all(self.center_x - avgx, self.center_y - avgy)
+        
+    def define_alphabet(self):
+        AlphabetEntry().open()
         
 class StateMachine(ScreenManager):
     def __init__(self, *args, **kwargs):

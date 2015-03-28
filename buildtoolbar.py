@@ -5,7 +5,11 @@ import globvars
 
 class CentreButton(ExtendButton):
     def on_press(self):
-        globvars.AllItems['stateMachine'].centreMachine()
+        globvars.AllItems['stateMachine'].centre_machine()
+        
+class AlphabetButton(ExtendButton):
+    def on_press(self):
+        globvars.AllItems['stateMachine'].define_alphabet()
         
 class MachineButton(StickyButton):
     def on_press(self):
@@ -25,6 +29,7 @@ class BuildToolbar(BoxLayout):
         self.add_widget(MachineButton(mode = "delete", text = "Delete\nState /\nTransition", selected = False))
         self.add_widget(MachineButton(mode = "final", text = "Set\nFinal\nState", selected = False))
         self.add_widget(CentreButton(text = "Centre\nState\nMachine"))
+        self.add_widget(AlphabetButton(text = "Define\nAlphabet"))
         self.add_widget(Spacer())
         self.add_widget(SwitchButton(mode = "run", text = "Run", direction = "left", newmode = "run", button = None))
 

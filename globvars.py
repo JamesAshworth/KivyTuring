@@ -7,4 +7,5 @@ def create():
     AllItems['transitions'] = []
     AllItems['linethickness'] = 2
     AllItems['gs'] = 20 #grabber size
-    AllItems['alphabet'] = string.ascii_lowercase
+    AllItems['alphabet'] = ""
+    AllItems['reservedCharacters'] = "/"

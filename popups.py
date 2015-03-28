@@ -2,11 +2,27 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
 from kivy.clock import Clock
 from kivy.uix.label import Label
-from inputs import LeftRightTextInput, AlphabetTextInput, StateTextInput
+from inputs import LeftRightTextInput, AlphabetTextInput, StateTextInput, AlphabetDefinitionTextInput
 from kivy.uix.widget import Widget
+from kivy.uix.button import Button
 import globvars
 
-class StateNamer(Popup):
+class CommonPopup(Popup):
+    def __init__(self, *args, **kwargs):
+        super(CommonPopup, self).__init__(*args, **kwargs)
+        self.bind(on_dismiss=self.post_process)
+        
+    def open(self, *args, **kwargs):
+        super(CommonPopup, self).open(*args, **kwargs)
+        Clock.schedule_once(self.set_focus_text)
+        
+    def set_focus_text(self, instance):
+        pass
+        
+    def post_process(self, instance):
+        pass
+
+class StateNamer(CommonPopup):
     def __init__(self, object, *args, **kwargs):
         super(StateNamer, self).__init__(*args, **kwargs)
         self.auto_dismiss = False
@@ -24,11 +40,6 @@ class StateNamer(Popup):
         self.feedback = Label()
         self.content.add_widget(self.feedback)
         self.object = object
-        self.bind(on_dismiss=self.post_process)
-        
-    def open(self, *args, **kwargs):
-        super(StateNamer, self).open(*args, **kwargs)
-        Clock.schedule_once(self.set_focus_text)
     
     def post_process(self, instance):
         if self.textinput.text == "":
@@ -48,7 +59,7 @@ class StateNamer(Popup):
     def set_focus_text(self, instance):
         self.textinput.focus = True
 
-class TransitionIdentifier(Popup):
+class TransitionIdentifier(CommonPopup):
     def __init__(self, object, *args, **kwargs):
         super(TransitionIdentifier, self).__init__(*args, **kwargs)
         self.auto_dismiss = False
@@ -74,11 +85,6 @@ class TransitionIdentifier(Popup):
         self.feedback = Label()
         self.content.add_widget(self.feedback)
         self.object = object
-        self.bind(on_dismiss=self.post_process)
-        
-    def open(self, *args, **kwargs):
-        super(TransitionIdentifier, self).open(*args, **kwargs)
-        Clock.schedule_once(self.set_focus_text)
     
     def post_process(self, instance):
         if self.textread.text == "":
@@ -112,3 +118,33 @@ class TransitionIdentifier(Popup):
         
     def set_focus_text3(self, instance):
         self.textmove.focus = True
+        
+class AlphabetEntry(CommonPopup):
+    def __init__(self, *args, **kwargs):
+        super(AlphabetEntry, self).__init__(*args, **kwargs)
+        self.auto_dismiss = False
+        self.title = "Alphabet Definition"
+        self.content = BoxLayout()
+        self.content.orientation = 'vertical'
+        self.feedback = Label(size_hint = (1, None), height = 30)
+        self.textinput = AlphabetDefinitionTextInput(feedback = self.feedback, text = globvars.AllItems['alphabet'])
+        self.button = Button(text = "Define")
+        self.button.bind(on_press=self.dismiss)
+        buttonholder = BoxLayout(size_hint = (1, None), height = 30)
+        buttonholder.add_widget(Widget())
+        buttonholder.add_widget(self.button)
+        buttonholder.add_widget(Widget())
+        self.content.add_widget(Label(height = 30, size_hint = (1, None), text = "Please define the alphabet for this machine:"))
+        self.content.add_widget(self.textinput)
+        self.content.add_widget(self.feedback)
+        self.content.add_widget(buttonholder)
+        
+    def set_focus_text(self, instance):
+        self.textinput.focus = True
+        
+    def post_process(self, instance):
+        if self.textinput.text == "":
+            self.feedback.text = "Alphabet cannot be blank"
+            return True
+        globvars.AllItems['alphabet'] = self.textinput.text
+        return False
