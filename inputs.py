@@ -1,4 +1,5 @@
 from kivy.uix.textinput import TextInput
+from string import ascii_letters, digits
 import globvars
 
 class LengthConstrainedTextInput(TextInput):
@@ -33,12 +34,23 @@ class AlphabetDefinitionTextInput(TextInput):
         super(AlphabetDefinitionTextInput, self).__init__(*args, **kwargs)
         self.feedback = feedback
         
+    def _tokenize(self, text):
+        #We know we only have alphanumeric, but we want to break on a per character basis
+        #So we overwrite this function
+        if text is None:
+            return
+        oldindex = 0
+        for index, char in enumerate(text):
+            yield text[index]
+            oldindex = index + 1
+        yield text[oldindex:]
+        
     def insert_text(self, substring, from_undo=False):
         self.feedback.text = ""
         newstring = ""
         for s in substring:
-            if s in globvars.AllItems['reservedCharacters']:
-                self.feedback.text = "'" + s + "' is a reserved character"
+            if s not in ascii_letters + digits:
+                self.feedback.text = "Alphabet is restricted to alphanumeric characters"
                 s = ""
             elif s in self.text:
                 self.feedback.text = "'" + s + "' is already in the alphabet"

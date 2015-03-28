@@ -95,7 +95,7 @@ class TransitionIdentifier(CommonPopup):
             if t == self.object:
                 pass
             elif t.startstate == self.object.startstate:
-                if ("~" + self.textread.text + "/") in ("~" + t.info.label.text):
+                if self.textread.text == t.info.label.text[0]:
                     self.feedback.text = "Transition is not unique"
                     Clock.schedule_once(self.set_focus_text)
                     return True
