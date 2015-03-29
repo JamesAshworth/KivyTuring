@@ -9,3 +9,4 @@ def create():
     AllItems['gs'] = 20 #grabber size
     AllItems['alphabet'] = ""
     AllItems['reservedCharacters'] = "/"
+    AllItems['moverDisplayModes'] = ["create_t", "edit", "delete"]

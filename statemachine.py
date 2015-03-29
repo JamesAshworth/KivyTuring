@@ -8,6 +8,29 @@ from math import sqrt, degrees, atan2
 from sys import maxint
 from popups import StateNamer, TransitionIdentifier, AlphabetEntry
 import globvars
+import statefuncs
+import transitionfuncs
+
+def create_state(x, y, name = None, final = False, start = False):    
+    while statefuncs.collide_state(x, y):
+        x += 50 #Something cleverer maybe
+    state = State(pos = (x - 25, y - 25))
+    globvars.AllItems['stateMachine'].add_widget(state)
+    globvars.AllItems['states'].append(state)
+    if name is not None:
+        state.set_text(name)
+    state.start_state(start)
+    state.final_state(final)
+    return state
+        
+def create_transition(startstate, endstate, info, x, y):
+    t = Transition()
+    t.startstate = startstate
+    t.endstate = endstate
+    t.finish_transition()
+    t.set_info(info)
+    t.update_midpoint_pos(x, y)
+    return t
 
 class StateLabel(Label):
     pass
@@ -43,6 +66,49 @@ class Transition(Widget):
         self.endstate   = None
         self.display    = True
         self.complete   = False
+        
+    def on_touch_move(self, touch):
+        if touch.ud['touched'] != self:
+            return False
+        if globvars.AllItems['stateMachine'].mode != "create_t":
+            return True
+        gs = globvars.AllItems['gs']
+        if self.complete:
+            self.midpoint.pos = [touch.x - gs / 2, touch.y - gs / 2]
+        else:
+            self.endpoint = [touch.x, touch.y]
+            self.midpoint.pos = [(self.startpoint[0] + touch.x - gs) / 2, (self.startpoint[1] + touch.y - gs) / 2]
+        self.update()
+        return True
+        
+    def on_touch_up(self, touch):
+        if self.complete:
+            return True
+        self.startstate.highlighted(False)
+        globvars.AllItems['stateMachine'].remove_widget(self)
+        globvars.AllItems['stateMachine'].remove_widget(self.midpoint)
+        if not statefuncs.identify_state_in(touch):
+            return True
+        self.endstate = touch.ud['touched']
+        self.finish_transition()
+        self.edit_info()
+            
+    def finish_transition(self):
+        gs = globvars.AllItems['gs']
+        self.complete = True
+        self.startpoint = [self.startstate.center_x, self.startstate.center_y]
+        self.endpoint = [self.endstate.center_x, self.endstate.center_y]
+        self.midpoint.pos = [(self.startpoint[0] + self.endpoint[0] - gs) / 2, (self.startpoint[1] + self.endpoint[1] - gs) / 2]
+        if self.startstate == self.endstate:
+            self.midpoint.y += 100
+        globvars.AllItems['stateMachine'].add_widget(self)
+        globvars.AllItems['stateMachine'].add_widget(self.midpoint)
+        globvars.AllItems['stateMachine'].add_widget(self.info)
+        self.startstate.transitions.append(self)
+        self.endstate.transitions.append(self)
+        globvars.AllItems['transitions'].append(self)
+        self.update()
+        globvars.AllItems['stateMachine'].states_to_front()
         
     def edit_info(self):
         TransitionIdentifier(self).open()
@@ -109,17 +175,6 @@ class Transition(Widget):
             self.midpoint.update()
             globvars.AllItems['stateMachine'].add_widget(self.midpoint)
             
-    def finish_transition(self):
-        gs = globvars.AllItems['gs']
-        self.complete = True
-        self.endpoint = [self.endstate.center_x, self.endstate.center_y]
-        self.midpoint.pos = [(self.startpoint[0] + self.endpoint[0] - gs) / 2, (self.startpoint[1] + self.endpoint[1] - gs) / 2]
-        if self.startstate == self.endstate:
-            self.midpoint.y += 100
-        self.update()
-        self.edit_info()
-        globvars.AllItems['stateMachine'].add_widget(self.info)
-            
     def midpoints_calc(self):
         gs = globvars.AllItems['gs']
         midpoints = [self.midpoint.x + (gs / 2), self.midpoint.y + (gs / 2)]
@@ -135,13 +190,9 @@ class Transition(Widget):
         self.display = display
         self.update()
         
-    def extend_line(self, touch):
-        gs = globvars.AllItems['gs']
-        if self.complete:
-            self.midpoint.pos = [touch.x - gs / 2, touch.y - gs / 2]
-        else:
-            self.endpoint = [touch.x, touch.y]
-            self.midpoint.pos = [(self.startpoint[0] + touch.x - gs) / 2, (self.startpoint[1] + touch.y - gs) / 2]
+    def update_midpoint_pos(self, x, y):  
+        self.midpoint.x = x
+        self.midpoint.y = y
         self.update()
         
     def update_point(self, state, point):
@@ -153,10 +204,8 @@ class Transition(Widget):
         if self.endstate == state:
             diff[0] += (point[0] - self.endpoint[0]) / 2
             diff[1] += (point[1] - self.endpoint[1]) / 2
-            self.endpoint = point    
-        self.midpoint.x += diff[0]  
-        self.midpoint.y += diff[1]
-        self.update()
+            self.endpoint = point
+        self.update_midpoint_pos(self.midpoint.x + diff[0], self.midpoint.y + diff[1])
         
     def destroy_self(self):
         self.startstate.transitions.remove(self)
@@ -185,30 +234,38 @@ class State(Widget):
         self.size_hint = None, None
         self.size = 50, 50
         self.colours = [Color(1, 1, 1), Color(0, 0, 0), Color(1, 1, 1), Color(1, 1, 1), Color(1, 1, 1)]
-        self.finalstatecolour = Color(1, 1, 1)
         self.final = False
+        self.start = False
         self.transitions = []
         self.name = ""
         self.label = StateLabel(pos = self.pos, size = self.size)
         self.default_name()
-        self.State_update()
+        self.state_update()
+        
+    def on_touch_move(self, touch):
+        if touch.ud['touched'] != self:
+            return False
+        if globvars.AllItems['stateMachine'].mode != "create_s":
+            return True
+        for state in globvars.AllItems['states']:
+            if state == self:
+                pass
+            elif state.collide_state(touch.x, touch.y):
+                return True
+        self.center = (touch.x, touch.y)
+        self.state_update()
+        return True
         
     def edit_name(self):
         StateNamer(self).open()
         
     def default_name(self):
         i = 0
-        while self.state_named(str(i)):
+        while statefuncs.state_named(str(i)):
             i += 1
         self.set_text(str(i))
         
-    def state_named(self, name):
-        for state in globvars.AllItems['states']:
-            if state.name == name:
-                return True
-        return False
-        
-    def State_update(self):
+    def state_update(self):
         for t in self.transitions:
             t.update_point(self, [self.center_x, self.center_y])
         pd = 2
@@ -225,62 +282,68 @@ class State(Widget):
             self.colours[0] = Color(1, 1, 0)
         else:
             self.colours[0] = Color(1, 1, 1)
-        self.State_update()
+        self.state_update()
         
     def set_text(self, text):
         self.name = text
         self.label.text = text
         
-    def finalstatetoggle(self):
-        self.finalstate(not self.final)
+    def final_state_toggle(self):
+        self.final_state(not self.final)
         
-    def finalstate(self, final):
+    def final_state(self, final):
         self.final = final
         if final:
             self.colours[3] = Color(0, 0, 0)
+        elif self.start:
+            self.colours[3] = Color(1, 0.5, 0.5)
         else:
             self.colours[3] = Color(1, 1, 1)
-        self.State_update()
+        self.state_update()
         
-    def distance_centre(self, touch):
-        dx = self.center_x - touch.x
-        dy = self.center_y - touch.y
+    def start_state(self, start):
+        self.start = start
+        if start:
+            self.colours[2] = Color(1, 0.5, 0.5)
+            self.colours[4] = Color(1, 0.5, 0.5)
+        else:
+            self.colours[2] = Color(1, 1, 1)
+            self.colours[4] = Color(1, 1, 1)
+        self.final_state(self.final)
+        
+    def set_start_state(self):
+        statefuncs.remove_start_state()
+        self.start_state(True)
+        
+    def distance_centre(self, x, y):
+        dx = self.center_x - x
+        dy = self.center_y - y
         return sqrt((dx ** 2) + (dy ** 2))
         
-    def collide_point(self, touch):
-        if self.distance_centre(touch) <= (self.height / 2):
+    def collide_point(self, x, y):
+        if self.distance_centre(x, y) <= (self.height / 2):
             return True
         return False
         
-    def collide_State(self, touch):
-        if self.distance_centre(touch) <= self.height:
+    def collide_state(self, x, y):
+        if self.distance_centre(x, y) <= self.height:
             return True
         return False
 
     def check_touch(self, touch):
-        if self.collide_point(touch):
+        if self.collide_point(touch.x, touch.y):
             touch.ud['touched'] = self
             return True
         return False
         
-    def try_move(self, touch):
-        for state in globvars.AllItems['states']:
-            if state == self:
-                pass
-            elif state.collide_State(touch):
-                return
-        self.center = (touch.x, touch.y)
-        self.State_update()
-        
     def move(self, dx, dy):
         self.pos = (self.x + dx, self.y + dy)
-        self.State_update()
+        self.state_update()
         
     def move_to_centre(self):
         dx = globvars.AllItems['stateMachine'].center_x - self.center_x
         dy = globvars.AllItems['stateMachine'].center_y - self.center_y
-        for state in globvars.AllItems['states']:
-            state.move(dx, dy)
+        statefuncs.move_all(dx, dy)
             
     def destroy_self(self):
         while len(self.transitions):
@@ -305,63 +368,30 @@ class _StateMachine(FloatLayout):
             
         touch.ud['last'] = [touch.x, touch.y]
             
-        if self.identify_transition_on(touch):
-            if self.mode == "create_t":
-                return
-            if self.mode == "delete":
-                touch.ud['touched'].destroy_self()
-                return
-            if self.mode == "edit":
-                touch.ud['touched'].edit_info()
-                return
+        if transitionfuncs.handled_by_transition(touch):
+            return
         
-        if self.identify_state_in(touch):
-            if self.mode == "final":
-                touch.ud['touched'].finalstatetoggle()
-            if self.mode == "delete":
-                touch.ud['touched'].destroy_self()
-            if self.mode == "create_t":
-                self.make_transition(touch)
-            if self.mode == "edit":
-                touch.ud['touched'].edit_name()
+        if statefuncs.handled_by_state(touch):
             return
         
         touch.ud['touched'] = self
                 
         if self.mode == "create_s":
-            for state in globvars.AllItems['states']:
-                if state.collide_State(touch):
-                    return
-            state = State(pos = (touch.x - 25, touch.y - 25))
-            self.add_widget(state)
-            globvars.AllItems['states'].append(state)
-            touch.ud['touched'] = state
+            start = False
+            if not len(globvars.AllItems['states']):
+                start = True
+            state = create_state(touch.x, touch.y, start = start)
+            if state is not None:
+                touch.ud['touched'] = state
             
     def move_all_touch(self, touch):
-        self.move_all(touch.x - touch.ud['last'][0], touch.y - touch.ud['last'][1])
+        statefuncs.move_all(touch.x - touch.ud['last'][0], touch.y - touch.ud['last'][1])
         touch.ud['last'] = [touch.x, touch.y]
-        
-    def move_all(self, x, y):
-        for state in globvars.AllItems['states']:
-            state.move(x, y)
             
     def set_mode(self, mode):
         self.mode = mode
-        display = False
-        if mode == "create_t":
-            display = True
-        if mode == "edit":
-            display = True
-        if mode == "delete":
-            display = True
-        for t in globvars.AllItems['transitions']:
-            t.display_mover(display)
-        
-    def try_move(self, touch):
-        pass
-        
-    def extend_line(self, touch):
-        pass
+        display = (mode in globvars.AllItems['moverDisplayModes'])
+        transitionfuncs.display_mover(display)
         
     def make_transition(self, touch):
         touch.ud['touched'].highlighted(True)
@@ -371,64 +401,25 @@ class _StateMachine(FloatLayout):
         touch.ud['touched'] = t
         self.add_widget(t)
         
-    def finish_transition(self, touch):
-        if touch.ud['touched'] == self:
-            return
-        t = touch.ud['touched']
-        if t.complete:
-            return
-        t.startstate.highlighted(False)
-        if not self.identify_state_in(touch):
-            self.remove_widget(t)
-            self.remove_widget(t.midpoint)
-            return
-        
-        t.endstate = touch.ud['touched']
-        t.finish_transition()
-        t.startstate.transitions.append(t)
-        t.endstate.transitions.append(t)
-        globvars.AllItems['transitions'].append(t)
-        self.states_to_front()
-        
     def states_to_front(self):
-        for state in globvars.AllItems['states']:
-            self.remove_widget(state)
-            self.add_widget(state)
-        if self.mode == "create_t":
-            for t in globvars.AllItems['transitions']:
-                self.remove_widget(t.midpoint)
-                self.add_widget(t.midpoint)
-    
-    def identify_state_in(self, touch):
-        for state in globvars.AllItems['states']:
-            if state.check_touch(touch):
-                return True
-        return False
-    
-    def identify_transition_on(self, touch):
-        for t in globvars.AllItems['transitions']:
-            if t.check_touch(touch):
-                return True
-        return False
+        statefuncs.states_to_front()
+        if self.mode in globvars.AllItems['moverDisplayModes']:
+            transitionfuncs.movers_to_front()
         
     def on_touch_move(self, touch):
         if self.outofbounds:
-            return
+            return False
+        if touch.ud['touched'] != self:
+            return touch.ud['touched'].on_touch_move(touch)
         if self.mode == "move":
             self.move_all_touch(touch)
-        if self.mode == "create_s":
-            touch.ud['touched'].try_move(touch)
-        if self.mode == "create_t":
-            touch.ud['touched'].extend_line(touch)
-        
-    def finalstatetoggle(self):
-        pass
-        
+            
     def on_touch_up(self, touch):
         if self.outofbounds:
-            return
-        if self.mode == "create_t":
-            self.finish_transition(touch)
+            return False
+        if touch.ud['touched'] != self:
+            return touch.ud['touched'].on_touch_up(touch)
+        return True
     
     def centre_machine(self):
         maxx, maxy, minx, miny = -maxint, -maxint, maxint, maxint
@@ -439,7 +430,7 @@ class _StateMachine(FloatLayout):
             miny = min(miny, state.center_y)
         avgx = (maxx + minx) / 2
         avgy = (maxy + miny) / 2
-        self.move_all(self.center_x - avgx, self.center_y - avgy)
+        statefuncs.move_all(self.center_x - avgx, self.center_y - avgy)
         
     def define_alphabet(self):
         AlphabetEntry().open()
