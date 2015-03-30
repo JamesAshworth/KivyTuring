@@ -45,6 +45,12 @@ class AlphabetDefinitionTextInput(TextInput):
             oldindex = index + 1
         yield text[oldindex:]
         
+    def _split_smart(self, text):
+        self.multiline = True
+        lines, linesflags = super(AlphabetDefinitionTextInput, self)._split_smart(text)
+        self.multiline = False
+        return lines, linesflags
+        
     def insert_text(self, substring, from_undo=False):
         self.feedback.text = ""
         newstring = ""
