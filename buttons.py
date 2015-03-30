@@ -40,8 +40,9 @@ class SwitchButton(ModeButton):
         self.button = button
         
     def on_press(self):
+        if not globvars.AllItems['stateMachine'].set_mode(self.newmode):
+            return
         globvars.AllItems['toolbar'].transition.direction = self.direction
         globvars.AllItems['toolbar'].current = self.mode
-        globvars.AllItems['stateMachine'].set_mode(self.newmode)
         if not (self.button is None):
             self.button.on_press()
