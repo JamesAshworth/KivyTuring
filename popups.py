@@ -6,11 +6,40 @@ from inputs import LeftRightTextInput, AlphabetTextInput, StateTextInput, Alphab
 from kivy.uix.widget import Widget
 from kivy.uix.button import Button
 import globvars
+        
+class SpacedContent(BoxLayout):
+    def __init__(self, *args, **kwargs):
+        super(SpacedContent, self).__init__(*args, **kwargs)
+        self.size_hint = (1, None)
+        self.height = 30
+        super(SpacedContent, self).add_widget(Widget())
+        self.lastwidget = Widget()
+        super(SpacedContent, self).add_widget(self.lastwidget)
+        
+    def add_widget(self, *args, **kwargs):
+        self.remove_widget(self.lastwidget)
+        super(SpacedContent, self).add_widget(*args, **kwargs)
+        super(SpacedContent, self).add_widget(self.lastwidget)
 
 class CommonPopup(Popup):
     def __init__(self, *args, **kwargs):
         super(CommonPopup, self).__init__(*args, **kwargs)
+        self.auto_dismiss = False
+        self.content = BoxLayout(orientation = 'vertical')
+        self.message = Label(height = 30, size_hint = (1, None))
+        self.entry = SpacedContent()
+        self.feedback = Label()
+        self.buttonholder = SpacedContent()
+        self.button = Button()
+        self.buttonholder.add_widget(self.button)
+        self.button.bind(on_press=self.dismiss)
         self.bind(on_dismiss=self.post_process)
+        
+    def assemble(self):
+        self.content.add_widget(self.message)
+        self.content.add_widget(self.entry)
+        self.content.add_widget(self.feedback)
+        self.content.add_widget(self.buttonholder)
         
     def open(self, *args, **kwargs):
         super(CommonPopup, self).open(*args, **kwargs)
@@ -24,22 +53,20 @@ class CommonPopup(Popup):
 
 class StateNamer(CommonPopup):
     def __init__(self, object, *args, **kwargs):
+        # Forward send
         super(StateNamer, self).__init__(*args, **kwargs)
-        self.auto_dismiss = False
+        # Set the key info for the user
         self.title = "State Name?"
-        self.content = BoxLayout()
-        self.content.orientation = 'vertical'
-        self.content.add_widget(Label(height = 30, size_hint = (1, None), text = "Please provide a unique name for this state:"))
-        info = BoxLayout(height = 30, size_hint = (1, None))
-        info.add_widget(Widget())
+        self.message.text = "Please provide a unique name for this state:"
+        self.button.text = "Set Name"
+        # Create the user input section
         self.textinput = StateTextInput(width = 80, size_hint = (None, 1), multiline = False, length = 4)
-        info.add_widget(self.textinput)
-        info.add_widget(Widget())
         self.textinput.bind(on_text_validate=self.dismiss)
-        self.content.add_widget(info)
-        self.feedback = Label()
-        self.content.add_widget(self.feedback)
+        # Add this to the correct area
+        self.entry.add_widget(self.textinput)
+        # Set the parent and assemble the popup
         self.object = object
+        self.assemble()
     
     def post_process(self, instance):
         if self.textinput.text == "":
@@ -61,30 +88,28 @@ class StateNamer(CommonPopup):
 
 class TransitionIdentifier(CommonPopup):
     def __init__(self, object, *args, **kwargs):
+        # Forward send
         super(TransitionIdentifier, self).__init__(*args, **kwargs)
-        self.auto_dismiss = False
+        # Set the key info for the user
         self.title = "Transition Details?"
-        self.content = BoxLayout()
-        self.content.orientation = 'vertical'
-        self.content.add_widget(Label(height = 30, size_hint = (1, None), text = "Please provide read/write/movement info for this transition:"))
-        info = BoxLayout(height = 30, size_hint = (1, None))
-        info.add_widget(Widget())
+        self.message.text = "Please provide read/write/movement info for this transition:"
+        self.button.text = "Set Info"
+        # Create the user input section
         self.textread = AlphabetTextInput(width = 30, size_hint = (None, 1), multiline = False)
-        info.add_widget(self.textread)
-        info.add_widget(Label(width = 10, size_hint = (None, 1), text = "/"))
         self.textwrite = AlphabetTextInput(width = 30, size_hint = (None, 1), multiline = False)
-        info.add_widget(self.textwrite)
-        info.add_widget(Label(width = 10, size_hint = (None, 1), text = "/"))
         self.textmove = LeftRightTextInput(width = 30, size_hint = (None, 1), multiline = False)
-        info.add_widget(self.textmove)
-        info.add_widget(Widget())
         self.textread.bind(on_text_validate=self.set_focus_text2)
         self.textwrite.bind(on_text_validate=self.set_focus_text3)
         self.textmove.bind(on_text_validate=self.dismiss)
-        self.content.add_widget(info)
-        self.feedback = Label()
-        self.content.add_widget(self.feedback)
+        # Add this to the correct area
+        self.entry.add_widget(self.textread)
+        self.entry.add_widget(Label(width = 10, size_hint = (None, 1), text = "/"))
+        self.entry.add_widget(self.textwrite)
+        self.entry.add_widget(Label(width = 10, size_hint = (None, 1), text = "/"))
+        self.entry.add_widget(self.textmove)
+        # Set the parent and assemble the popup
         self.object = object
+        self.assemble()
     
     def post_process(self, instance):
         if self.textread.text == "":
@@ -121,30 +146,44 @@ class TransitionIdentifier(CommonPopup):
         
 class AlphabetEntry(CommonPopup):
     def __init__(self, *args, **kwargs):
+        # Forward send
         super(AlphabetEntry, self).__init__(*args, **kwargs)
-        self.auto_dismiss = False
+        # Set the key info for the user
         self.title = "Alphabet Definition"
-        self.content = BoxLayout()
-        self.content.orientation = 'vertical'
-        self.feedback = Label(size_hint = (1, None), height = 30)
-        self.textinput = AlphabetDefinitionTextInput(feedback = self.feedback, text = globvars.AllItems['alphabet'])
-        self.button = Button(text = "Define")
-        self.button.bind(on_press=self.dismiss)
-        buttonholder = BoxLayout(size_hint = (1, None), height = 30)
-        buttonholder.add_widget(Widget())
-        buttonholder.add_widget(self.button)
-        buttonholder.add_widget(Widget())
-        self.content.add_widget(Label(height = 30, size_hint = (1, None), text = "Please define the alphabet for this machine:"))
-        self.content.add_widget(self.textinput)
-        self.content.add_widget(self.feedback)
-        self.content.add_widget(buttonholder)
+        self.message.text = "Please define the alphabet for this machine:"
+        self.button.text = "Define"
+        # Create the user input section
+        # Add this to the correct area
+        self.entry = AlphabetDefinitionTextInput(feedback = self.feedback, text = globvars.AllItems['alphabet'], multiline = False)
+        self.entry.bind(on_text_validate=self.dismiss)
+        # Set the parent and assemble the popup
+        self.assemble()
         
     def set_focus_text(self, instance):
-        self.textinput.focus = True
+        self.entry.focus = True
         
     def post_process(self, instance):
-        if self.textinput.text == "":
-            self.feedback.text = "Alphabet cannot be blank"
+        if self.entry.text == "":
+            self.feedback.text = "Alphabet cannot be empty"
             return True
-        globvars.AllItems['alphabet'] = self.textinput.text
+        globvars.AllItems['alphabet'] = self.entry.text
         return False
+        
+class ErrorBox(CommonPopup):
+    def __init__(self, message, *args, **kwargs):
+        # Forward send
+        super(ErrorBox, self).__init__(*args, **kwargs)
+        # Set the key info for the user
+        self.title = "Error"
+        self.message.text = message
+        self.button.text = "Ok"
+        self.size = (450, 150)
+        # Create the user input section
+        # Add this to the correct area
+        # Set the parent and assemble the popup
+        self.assemble()
+        
+    def assemble(self):
+        self.content.add_widget(self.message)
+        self.content.add_widget(self.buttonholder)
+        
