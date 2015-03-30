@@ -4,9 +4,10 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.graphics import Color, Ellipse, Rectangle, Line, Triangle
 from kivy.uix.label import Label
 from kivy.uix.scatterlayout import ScatterLayout
+from kivy.clock import Clock
 from math import sqrt, degrees, atan2
 from sys import maxint
-from popups import StateNamer, TransitionIdentifier, AlphabetEntry
+from popups import StateNamer, TransitionIdentifier, AlphabetEntry, ErrorBox
 import globvars
 import statefuncs
 import transitionfuncs
@@ -66,6 +67,7 @@ class Transition(Widget):
         self.endstate   = None
         self.display    = True
         self.complete   = False
+        self.alongline  = 0
         
     def on_touch_move(self, touch):
         if touch.ud['touched'] != self:
@@ -117,15 +119,7 @@ class Transition(Widget):
         self.info.update_info(text)
         
     def line_middle(self):
-        gs = globvars.AllItems['gs']
-        points = self.midpoints_calc()
-        if len(points) == 2:
-            x = self.startpoint[0] / 4 + points[0] / 2 + self.endpoint[0] / 4
-            y = self.startpoint[1] / 4 + points[1] / 2 + self.endpoint[1] / 4
-        else:
-            x = self.startpoint[0] / 16 + points[0] / 4 + points[2] * 3 / 8 + points[4] / 4 + self.endpoint[0] / 16
-            y = self.startpoint[1] / 16 + points[1] / 4 + points[3] * 3 / 8 + points[5] / 4 + self.endpoint[1] / 16
-        return [x, y]
+        return self.find_point_on_line(0.5)
         
     def direction_triangle(self):
         gs = globvars.AllItems['gs']
@@ -150,6 +144,30 @@ class Transition(Widget):
         bpoint2[0] += dy
         bpoint2[1] -= dx
         return fpoint + bpoint1 + bpoint2
+        
+    def move_along_line(self):
+        Clock.schedule_interval(self.do_move_along_line, 0.01)
+        
+    def find_point_on_line(self, a):
+        p = self.midpoints_calc()
+        z = (1 - a)
+        if len(p) == 2:
+            x = self.startpoint[0] * (z ** 2) + p[0] * z * a * 2 + self.endpoint[0] * (a ** 2)
+            y = self.startpoint[1] * (z ** 2) + p[1] * z * a * 2 + self.endpoint[1] * (a ** 2)
+        else:
+            x = self.startpoint[0] * (z ** 4) + p[0] * 4 * (z ** 3) * a + p[2] * 6 * (z ** 2) * (a ** 2) + p[4] * 4 * z * (a ** 3) + self.endpoint[0] * (a ** 4)
+            y = self.startpoint[1] * (z ** 4) + p[1] * 4 * (z ** 3) * a + p[3] * 6 * (z ** 2) * (a ** 2) + p[5] * 4 * z * (a ** 3) + self.endpoint[1] * (a ** 4)
+        return [x, y]
+        
+    def do_move_along_line(self):
+        old = find_point_on_line(self.alongline)
+        self.alongline += 0.01
+        new = find_point_on_line(self.alongline)
+        statefuncs.move_all(new[0] - old[0], new[1] - old[1])
+        if self.alongline < 1:
+            return True
+        self.alongline = 0
+        return False
         
     def rotation_angle(self):
         points = self.direction_triangle()
@@ -233,7 +251,7 @@ class State(Widget):
         super(State, self).__init__(*args, **kwargs)
         self.size_hint = None, None
         self.size = 50, 50
-        self.colours = [Color(1, 1, 1), Color(0, 0, 0), Color(1, 1, 1), Color(1, 1, 1), Color(1, 1, 1)]
+        self.colours = [Color(1, 1, 1, 0), Color(0, 0, 0), Color(1, 1, 1), Color(1, 1, 1), Color(1, 1, 1)]
         self.final = False
         self.start = False
         self.transitions = []
@@ -281,7 +299,7 @@ class State(Widget):
         if highlighted:
             self.colours[0] = Color(1, 1, 0)
         else:
-            self.colours[0] = Color(1, 1, 1)
+            self.colours[0] = Color(1, 1, 1, 0)
         self.state_update()
         
     def set_text(self, text):
@@ -387,11 +405,21 @@ class _StateMachine(FloatLayout):
     def move_all_touch(self, touch):
         statefuncs.move_all(touch.x - touch.ud['last'][0], touch.y - touch.ud['last'][1])
         touch.ud['last'] = [touch.x, touch.y]
+        
+    def check_mode(self, mode):
+        if mode == "run":
+            if not len(globvars.AllItems['states']):
+                ErrorBox("Cannot run with no states").open()
+                return False
+        return True
             
     def set_mode(self, mode):
+        if not self.check_mode(mode):
+            return False
         self.mode = mode
         display = (mode in globvars.AllItems['moverDisplayModes'])
         transitionfuncs.display_mover(display)
+        return True
         
     def make_transition(self, touch):
         touch.ud['touched'].highlighted(True)
