@@ -7,7 +7,7 @@ import globvars
         
 class ResetButton(Button):
     def on_press(self):
-        globvars.AllItems['tape'].resetPosition()
+        globvars.AllItems['tape'].reset_position()
         
 class ShiftButton(Button):
     def __init__(self, direction, *args, **kwargs):
