@@ -11,12 +11,12 @@ class ExtendButton(Button):
         pass
         
 class ModeButton(ExtendButton):
-    def __init__(self, mode, *args, **kwargs):
+    def __init__(self, mode = None, *args, **kwargs):
         super(ModeButton, self).__init__(*args, **kwargs)
         self.mode = mode
         
 class StickyButton(ModeButton):
-    def __init__(self, selected, *args, **kwargs):
+    def __init__(self, selected = False, *args, **kwargs):
         super(StickyButton, self).__init__(*args, **kwargs)
         self.default = self.background_normal
         self.selected(selected)
