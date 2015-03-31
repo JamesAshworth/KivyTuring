@@ -28,3 +28,7 @@ def identify_transition_on(touch):
         if t.check_touch(touch):
             return True
     return False
+    
+def reset_movement():
+    for t in globvars.AllItems['transitions']:
+        t.alongline = 0
