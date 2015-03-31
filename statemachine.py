@@ -369,6 +369,9 @@ class State(Widget):
             t.destroy_self()
         globvars.AllItems['stateMachine'].remove_widget(self)
         globvars.AllItems['states'].remove(self)
+        if self.start:
+            if len(globvars.AllItems['states']):
+                globvars.AllItems['states'][0].set_start_state()
 
 class _StateMachine(FloatLayout):
     def __init__(self, *args, **kwargs):
