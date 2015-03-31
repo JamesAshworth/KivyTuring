@@ -19,4 +19,5 @@ class TuringApp(App):
         
 if __name__ == '__main__':
     globvars.create()
+    globvars.AllItems['alphabet'] = "01"
     TuringApp().run()
