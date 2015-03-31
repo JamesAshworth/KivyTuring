@@ -1,3 +1,4 @@
+from kivy.clock import Clock
 import string
 
 def create():
@@ -10,3 +11,4 @@ def create():
     AllItems['alphabet'] = ""
     AllItems['reservedCharacters'] = "/"
     AllItems['moverDisplayModes'] = ["create_t", "edit", "delete"]
+    AllItems['movementClock'] = create
