@@ -56,3 +56,10 @@ def find_state_by_name(name):
 def remove_start_state():
     for state in globvars.AllItems['states']:
         state.start_state(False)
+        
+def find_start_and_centre():
+    for state in globvars.AllItems['states']:
+        if state.start:
+            state.move_to_centre()
+            return state
+    return None
