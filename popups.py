@@ -166,6 +166,8 @@ class AlphabetEntry(CommonPopup):
         if self.entry.text == "":
             self.feedback.text = "Alphabet cannot be empty"
             return True
+        if "_" not in self.entry.text:
+            self.entry.text = "_" + self.entry.text
         globvars.AllItems['alphabet'] = self.entry.text
         return False
         
