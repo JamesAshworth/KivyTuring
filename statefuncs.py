@@ -63,3 +63,7 @@ def find_start_and_centre():
             state.move_to_centre()
             return state
     return None
+    
+def remove_highlight():
+    for state in globvars.AllItems['states']:
+        state.highlighted(False)
