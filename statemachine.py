@@ -11,6 +11,7 @@ from popups import StateNamer, TransitionIdentifier, AlphabetEntry, ErrorBox
 import globvars
 import statefuncs
 import transitionfuncs
+import logic
 
 def create_state(x, y, name = None, final = False, start = False):    
     while statefuncs.collide_state(x, y):
@@ -118,6 +119,19 @@ class Transition(Widget):
     def set_info(self, text):
         self.info.update_info(text)
         
+    def read_value(self):
+        return self.info.label.text[0]
+        
+    def write_value(self):
+        return self.info.label.text[2]
+    
+    def move_value(self):
+        if self.info.label.text[4] == "L":
+            return -1
+        if self.info.label.text[4] == "R":
+            return 1
+        return 0
+        
     def line_middle(self):
         return self.find_point_on_line(0.5)
         
@@ -146,6 +160,7 @@ class Transition(Widget):
         return fpoint + bpoint1 + bpoint2
         
     def move_along_line(self):
+        globvars.AllItems['movementClock'] = self.do_move_along_line
         Clock.schedule_interval(self.do_move_along_line, 0.01)
         
     def find_point_on_line(self, a):
@@ -159,14 +174,19 @@ class Transition(Widget):
             y = self.startpoint[1] * (z ** 4) + p[1] * 4 * (z ** 3) * a + p[3] * 6 * (z ** 2) * (a ** 2) + p[5] * 4 * z * (a ** 3) + self.endpoint[1] * (a ** 4)
         return [x, y]
         
-    def do_move_along_line(self):
-        old = find_point_on_line(self.alongline)
+    def do_move_along_line(self, instance):
+        old = self.find_point_on_line(self.alongline)
         self.alongline += 0.01
-        new = find_point_on_line(self.alongline)
-        statefuncs.move_all(new[0] - old[0], new[1] - old[1])
+        new = self.find_point_on_line(self.alongline)
+        statefuncs.move_all(old[0] - new[0], old[1] - new[1])
+        if self.alongline >= 0.25:
+            self.startstate.highlighted(False)
+        if self.alongline >= 0.75:
+            self.endstate.highlighted(True)
         if self.alongline < 1:
             return True
         self.alongline = 0
+        logic.do_run()
         return False
         
     def rotation_angle(self):
@@ -414,6 +434,7 @@ class _StateMachine(FloatLayout):
             if not len(globvars.AllItems['states']):
                 ErrorBox("Cannot run with no states").open()
                 return False
+            logic.begin_simulation()
         return True
             
     def set_mode(self, mode):
