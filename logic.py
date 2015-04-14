@@ -1,6 +1,7 @@
 import globvars
 import statefuncs
 import transitionfuncs
+from popups import InfoBox
 
 def begin_simulation():
     globvars.AllItems['simState'] = statefuncs.find_start_and_centre()
@@ -17,15 +18,19 @@ def do_run():
 def do_step():
     readVal = globvars.AllItems['tape'].get_value(globvars.AllItems['simCell'])
     for t in globvars.AllItems['simState'].transitions:
-        if t.read_value() == readVal:
-            globvars.AllItems['tape'].set_value(globvars.AllItems['simCell'], t.write_value())
-            globvars.AllItems['simCell'] += t.move_value()
-            globvars.AllItems['tape'].select_cell(globvars.AllItems['simCell'])
-            t.move_along_line()
-            globvars.AllItems['simState'] = t.endstate
-            return
+        if t.startstate == globvars.AllItems['simState']:
+            if t.read_value() == readVal:
+                globvars.AllItems['tape'].set_value(globvars.AllItems['simCell'], t.write_value())
+                globvars.AllItems['simCell'] += t.move_value()
+                globvars.AllItems['tape'].select_cell(globvars.AllItems['simCell'])
+                t.move_along_line()
+                globvars.AllItems['simState'] = t.endstate
+                return
             
-    print "Done" #popup, deselect run
+    if globvars.AllItems['simState'].final:
+        InfoBox(title="Complete", message="Simulation halted with answer 'Yes'").open()
+    else:
+        InfoBox(title="Complete", message="Simulation halted with answer 'No'").open()
     
 def end_simulation():
     globvars.AllItems['simState'] = None
