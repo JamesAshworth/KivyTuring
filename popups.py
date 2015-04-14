@@ -171,12 +171,12 @@ class AlphabetEntry(CommonPopup):
         globvars.AllItems['alphabet'] = self.entry.text
         return False
         
-class ErrorBox(CommonPopup):
-    def __init__(self, message, *args, **kwargs):
+class InfoBox(CommonPopup):
+    def __init__(self, message, title, *args, **kwargs):
         # Forward send
-        super(ErrorBox, self).__init__(*args, **kwargs)
+        super(InfoBox, self).__init__(*args, **kwargs)
         # Set the key info for the user
-        self.title = "Error"
+        self.title = title
         self.message.text = message
         self.button.text = "Ok"
         self.size = (450, 150)
@@ -189,3 +189,6 @@ class ErrorBox(CommonPopup):
         self.content.add_widget(self.message)
         self.content.add_widget(self.buttonholder)
         
+class ErrorBox(InfoBox):
+    def __init__(self, message, *args, **kwargs):
+        super(ErrorBox, self).__init__(message=message, title="Error", *args, **kwargs)
