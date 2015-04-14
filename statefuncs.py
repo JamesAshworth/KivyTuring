@@ -16,24 +16,8 @@ def states_to_front():
         globvars.AllItems['stateMachine'].add_widget(state)
         
 def handled_by_state(touch):
-    mode = globvars.AllItems['stateMachine'].mode
     if identify_state_in(touch):
-        if mode == "final":
-            touch.ud['touched'].final_state_toggle()
-            return True
-        if mode == "start":
-            touch.ud['touched'].set_start_state()
-            return True
-        if mode == "delete":
-            touch.ud['touched'].destroy_self()
-            return True
-        if mode == "create_t":
-            globvars.AllItems['stateMachine'].make_transition(touch)
-            return True
-        if mode == "edit":
-            touch.ud['touched'].edit_name()
-            return True
-        return True
+        return touch.ud['touched'].on_touch_down(touch)
     return False
     
 def identify_state_in(touch):
@@ -45,7 +29,8 @@ def identify_state_in(touch):
 def collide_state(x, y):        
     for state in globvars.AllItems['states']:
         if state.collide_state(x, y):
-            return None
+            return True
+    return False
             
 def find_state_by_name(name):
     for state in globvars.AllItems['states']:

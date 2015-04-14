@@ -13,9 +13,12 @@ import statefuncs
 import transitionfuncs
 import logic
 
-def create_state(x, y, name = None, final = False, start = False):    
+def create_state(x, y, name = None, final = False, start = False, user = True):  
     while statefuncs.collide_state(x, y):
-        x += 50 #Something cleverer maybe
+        if user:
+            return None
+        else:
+            x += 50 #Something cleverer maybe
     state = State(pos = (x - 25, y - 25))
     globvars.AllItems['stateMachine'].add_widget(state)
     globvars.AllItems['states'].append(state)
@@ -70,10 +73,20 @@ class Transition(Widget):
         self.complete   = False
         self.alongline  = 0
         
+    def on_touch_down(self, touch):
+        if touch.ud['mode'] == "create_t":
+            if touch.is_double_tap:
+                self.edit_info()
+        elif touch.ud['mode'] == "delete":
+            self.destroy_self()
+        else:
+            return False
+        return True
+        
     def on_touch_move(self, touch):
         if touch.ud['touched'] != self:
             return False
-        if globvars.AllItems['stateMachine'].mode != "create_t":
+        if touch.ud['mode'] != "create_t":
             return True
         gs = globvars.AllItems['gs']
         if self.complete:
@@ -279,11 +292,29 @@ class State(Widget):
         self.label = StateLabel(pos = self.pos, size = self.size)
         self.default_name()
         self.state_update()
+
+    def check_touch(self, touch):
+        if self.collide_point(touch.x, touch.y):
+            touch.ud['touched'] = self
+            return True
+        return False
+        
+    def on_touch_down(self, touch):
+        if touch.ud['mode'] == "final":
+            self.final_state_toggle()
+        if touch.ud['mode'] == "start":
+            self.set_start_state()
+        if touch.ud['mode'] == "delete":
+            self.destroy_self()
+        if touch.ud['mode'] == "create_t":
+            globvars.AllItems['stateMachine'].make_transition(touch)
+        if touch.ud['mode'] == "create_s":
+            if touch.is_double_tap:
+                touch.ud['touched'].edit_name()
+        return True
         
     def on_touch_move(self, touch):
-        if touch.ud['touched'] != self:
-            return False
-        if globvars.AllItems['stateMachine'].mode != "create_s":
+        if touch.ud['mode'] != "create_s":
             return True
         for state in globvars.AllItems['states']:
             if state == self:
@@ -367,12 +398,6 @@ class State(Widget):
         if self.distance_centre(x, y) <= self.height:
             return True
         return False
-
-    def check_touch(self, touch):
-        if self.collide_point(touch.x, touch.y):
-            touch.ud['touched'] = self
-            return True
-        return False
         
     def move(self, dx, dy):
         self.pos = (self.x + dx, self.y + dy)
@@ -407,7 +432,11 @@ class _StateMachine(FloatLayout):
             self.outofbounds = True
             return
             
+        if (touch.is_double_tap and self.mode == "move"):
+            self.centre_machine()
+            
         touch.ud['last'] = [touch.x, touch.y]
+        touch.ud['mode'] = self.mode
             
         if transitionfuncs.handled_by_transition(touch):
             return
