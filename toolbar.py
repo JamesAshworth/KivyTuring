@@ -17,10 +17,10 @@ class Toolbar(ScreenManager):
         self.add_widget(screen)
         globvars.AllItems['toolbar'] = self
         
-class PrototypeApp(App):
+class TuringApp(App):
     def build(self):
         return Toolbar()
 
 if __name__ == '__main__':
     globvars.create()
-    PrototypeApp().run()
+    TuringApp().run()

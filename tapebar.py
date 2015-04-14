@@ -31,10 +31,10 @@ class Tapebar(BoxLayout):
         self.add_widget(sm)
         self.add_widget(ShiftButton(direction = +1))
 
-class PrototypeApp(App):
+class TuringApp(App):
     def build(self):
         return Tapebar()
         
 if __name__ == '__main__':
     globvars.create()
-    PrototypeApp().run()
+    TuringApp().run()

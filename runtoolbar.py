@@ -24,10 +24,12 @@ class PauseButton(StickyButton):
     def on_press(self):
         globvars.AllItems['running'] = False
         super(PauseButton, self).on_press()
+        # Sticky buttons leave themselves selected on press, so we deselect
         self.selected(False)
         
 class ResetButton(StickyButton):
     def on_press(self):
+        # If we're midway through a transition, stop the movement callback
         Clock.unschedule(globvars.AllItems['movementClock'])
         globvars.AllItems['running'] = False
         logic.reset_simulation()
@@ -47,9 +49,9 @@ class RunToolbar(BoxLayout):
         self.add_widget(ResetButton(text = "Reset"))
         self.add_widget(Spacer())
 
-class PrototypeApp(App):
+class TuringApp(App):
     def build(self):
         return RunToolbar()
 
 if __name__ == '__main__':
-    PrototypeApp().run()
+    TuringApp().run()
