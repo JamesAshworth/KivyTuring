@@ -21,22 +21,20 @@ class BuildToolbar(BoxLayout):
         super(BuildToolbar, self).__init__(*args, **kwargs)
         self.size_hint = 1, None
         self.height = 60
-        globvars.AllItems['move'] = MachineButton(mode = "move", text = "Move\nCanvas", selected = True)
+        globvars.AllItems['move'] = MachineButton(mode = "move", background_normal = "./resources/move_button.png", background_down = "./resources/move_button_pressed.png", selected = True)
         self.add_widget(globvars.AllItems['move'])
-        self.add_widget(MachineButton(mode = "create_s", text = "Create\n/ Move\nState"))
-        self.add_widget(MachineButton(mode = "create_t", text = "Create\n/ Move\nTransition"))
-        self.add_widget(MachineButton(mode = "edit", text = "Edit\nState /\nTransition"))
-        self.add_widget(MachineButton(mode = "delete", text = "Delete\nState /\nTransition"))
-        self.add_widget(MachineButton(mode = "start", text = "Set\nStart\nState"))
-        self.add_widget(MachineButton(mode = "final", text = "Set\nFinal\nState"))
-        self.add_widget(CentreButton(text = "Centre\nState\nMachine"))
-        self.add_widget(AlphabetButton(text = "Define\nAlphabet"))
+        self.add_widget(MachineButton(mode = "create_s", background_normal = "./resources/state_button.png", background_down = "./resources/state_button_pressed.png"))
+        self.add_widget(MachineButton(mode = "create_t", background_normal = "./resources/transition_button.png", background_down = "./resources/transition_button_pressed.png"))
+        self.add_widget(MachineButton(mode = "delete", background_normal = "./resources/delete_button.png", background_down = "./resources/delete_button_pressed.png"))
+        self.add_widget(MachineButton(mode = "start", background_normal = "./resources/start_button.png", background_down = "./resources/start_button_pressed.png"))
+        self.add_widget(MachineButton(mode = "final", background_normal = "./resources/final_button.png", background_down = "./resources/final_button_pressed.png"))
+        self.add_widget(AlphabetButton(background_normal = "./resources/alphabet_button.png", background_down = "./resources/alphabet_button_pressed.png"))
         self.add_widget(Spacer())
         self.add_widget(SwitchButton(mode = "run", text = "Run", direction = "left", newmode = "run", button = None))
 
-class PrototypeApp(App):
+class TuringApp(App):
     def build(self):
         return BuildToolbar()
 
 if __name__ == '__main__':
-    PrototypeApp().run()
+    TuringApp().run()
