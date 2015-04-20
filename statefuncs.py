@@ -42,11 +42,17 @@ def remove_start_state():
     for state in globvars.AllItems['states']:
         state.start_state(False)
         
-def find_start_and_centre():
+def find_start_state():
     for state in globvars.AllItems['states']:
         if state.start:
-            state.move_to_centre()
             return state
+    return None
+        
+def find_start_and_centre():
+    state = find_start_state()
+    if state != None:
+        state.move_to_centre()
+        return state
     return None
     
 def remove_highlight():
