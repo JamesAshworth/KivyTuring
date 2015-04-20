@@ -12,3 +12,5 @@ def create():
     AllItems['reservedCharacters'] = "/"
     AllItems['moverDisplayModes'] = ["create_t", "edit", "delete"]
     AllItems['movementClock'] = create
+    AllItems['undo'] = []
+    AllItems['redo'] = []

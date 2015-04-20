@@ -1,6 +1,6 @@
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
-from buttons import ExtendButton, StickyButton, SwitchButton, Spacer
+from buttons import ExtendButton, StickyButton, SwitchButton, Spacer, UndoButton
 import globvars
 
 class CentreButton(ExtendButton):
@@ -19,9 +19,10 @@ class MachineButton(StickyButton):
 class BuildToolbar(BoxLayout):
     def __init__(self, *args, **kwargs):
         super(BuildToolbar, self).__init__(*args, **kwargs)
-        self.size_hint = 1, None
-        self.height = 60
+        self.add_widget(Spacer())
         globvars.AllItems['move'] = MachineButton(mode = "move", background_normal = "./resources/move_button.png", background_down = "./resources/move_button_pressed.png", selected = True)
+        globvars.AllItems['undoButton'] = UndoButton(mode = "undo", text = "Undo")
+        globvars.AllItems['redoButton'] = UndoButton(mode = "redo", text = "Redo")
         self.add_widget(globvars.AllItems['move'])
         self.add_widget(MachineButton(mode = "create_s", background_normal = "./resources/state_button.png", background_down = "./resources/state_button_pressed.png"))
         self.add_widget(MachineButton(mode = "create_t", background_normal = "./resources/transition_button.png", background_down = "./resources/transition_button_pressed.png"))
@@ -29,6 +30,9 @@ class BuildToolbar(BoxLayout):
         self.add_widget(MachineButton(mode = "start", background_normal = "./resources/start_button.png", background_down = "./resources/start_button_pressed.png"))
         self.add_widget(MachineButton(mode = "final", background_normal = "./resources/final_button.png", background_down = "./resources/final_button_pressed.png"))
         self.add_widget(AlphabetButton(background_normal = "./resources/alphabet_button.png", background_down = "./resources/alphabet_button_pressed.png"))
+        self.add_widget(Spacer())
+        self.add_widget(globvars.AllItems['undoButton'])
+        self.add_widget(globvars.AllItems['redoButton'])
         self.add_widget(Spacer())
         self.add_widget(SwitchButton(mode = "run", text = "Run", direction = "left", newmode = "run", button = None))
 

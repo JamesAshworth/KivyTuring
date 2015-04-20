@@ -1,6 +1,7 @@
 from kivy.uix.button import Button
 from kivy.uix.widget import Widget
 import globvars
+import undo
 
 class Spacer(Widget):
     def selected(self, selected):
@@ -46,3 +47,14 @@ class SwitchButton(ModeButton):
         globvars.AllItems['toolbar'].current = self.mode
         if not (self.button is None):
             self.button.on_press()
+            
+class UndoButton(ModeButton):
+    def __init__(self, *args, **kwargs):
+        super(UndoButton, self).__init__(*args, **kwargs)
+        self.disabled = True
+        
+    def on_press(self):
+        if self.mode == 'undo':
+            undo.do_undo()
+        elif self.mode == 'redo':
+            undo.do_redo()

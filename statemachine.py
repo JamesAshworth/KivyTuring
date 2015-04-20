@@ -12,6 +12,7 @@ import globvars
 import statefuncs
 import transitionfuncs
 import logic
+from undo import *
 
 def create_state(x, y, name = None, final = False, start = False, user = True):  
     while statefuncs.collide_state(x, y):
@@ -50,7 +51,13 @@ class TransitionInfo(ScatterLayout):
         self.add_widget(self.label)
         
     def update_info(self, text):
-        self.label.text = (text + "\n\n")
+        text += "\n\n"
+        if self.label.text != "":
+            if self.label.text != text:
+                UndoTransitionInfo(self, self.label.text)
+            self.label.text = text
+        else:
+            self.label.text = text
 
 class TransitionGrabber(Widget):
     def update(self):
@@ -75,9 +82,11 @@ class Transition(Widget):
         
     def on_touch_down(self, touch):
         if touch.ud['mode'] == "create_t":
+            touch.ud['transitionPos'] = [self.midpoint.x, self.midpoint.y]
             if touch.is_double_tap:
                 self.edit_info()
         elif touch.ud['mode'] == "delete":
+            UndoTransitionDelete(self)
             self.destroy_self()
         else:
             return False
@@ -99,29 +108,38 @@ class Transition(Widget):
         
     def on_touch_up(self, touch):
         if self.complete:
+            if touch.ud['mode'] == "create_t":
+                if touch.ud['transitionPos'] == [self.midpoint.x, self.midpoint.y]:
+                    return True
+                UndoTransitionMove(self, self.midpoint.x - touch.ud['transitionPos'][0], self.midpoint.y - touch.ud['transitionPos'][1])
             return True
+        self.unfinished_on_touch_up(touch)
+        
+    def unfinished_on_touch_up(self, touch):
         self.startstate.highlighted(False)
         globvars.AllItems['stateMachine'].remove_widget(self)
         globvars.AllItems['stateMachine'].remove_widget(self.midpoint)
         if not statefuncs.identify_state_in(touch):
             return True
         self.endstate = touch.ud['touched']
+        UndoTransitionCreate(self)
         self.finish_transition()
         self.edit_info()
             
-    def finish_transition(self):
-        gs = globvars.AllItems['gs']
-        self.complete = True
-        self.startpoint = [self.startstate.center_x, self.startstate.center_y]
-        self.endpoint = [self.endstate.center_x, self.endstate.center_y]
-        self.midpoint.pos = [(self.startpoint[0] + self.endpoint[0] - gs) / 2, (self.startpoint[1] + self.endpoint[1] - gs) / 2]
-        if self.startstate == self.endstate:
-            self.midpoint.y += 100
-        globvars.AllItems['stateMachine'].add_widget(self)
-        globvars.AllItems['stateMachine'].add_widget(self.midpoint)
-        globvars.AllItems['stateMachine'].add_widget(self.info)
+    def finish_transition(self, resetMidpoint = True):
+        if resetMidpoint:
+            gs = globvars.AllItems['gs']
+            self.complete = True
+            self.startpoint = [self.startstate.center_x, self.startstate.center_y]
+            self.endpoint = [self.endstate.center_x, self.endstate.center_y]
+            self.midpoint.pos = [(self.startpoint[0] + self.endpoint[0] - gs) / 2, (self.startpoint[1] + self.endpoint[1] - gs) / 2]
+            if self.startstate == self.endstate:
+                self.midpoint.y += 100
         self.startstate.transitions.append(self)
         self.endstate.transitions.append(self)
+        globvars.AllItems['stateMachine'].add_widget(self.midpoint)
+        globvars.AllItems['stateMachine'].add_widget(self.info)
+        globvars.AllItems['stateMachine'].add_widget(self)
         globvars.AllItems['transitions'].append(self)
         self.update()
         globvars.AllItems['stateMachine'].states_to_front()
@@ -303,12 +321,13 @@ class State(Widget):
         if touch.ud['mode'] == "final":
             self.final_state_toggle()
         if touch.ud['mode'] == "start":
-            self.set_start_state()
+            self.set_start_state(undoPossible = True)
         if touch.ud['mode'] == "delete":
             self.destroy_self()
         if touch.ud['mode'] == "create_t":
             globvars.AllItems['stateMachine'].make_transition(touch)
         if touch.ud['mode'] == "create_s":
+            touch.ud['statePos'] = [self.x, self.y]
             if touch.is_double_tap:
                 touch.ud['touched'].edit_name()
         return True
@@ -325,6 +344,13 @@ class State(Widget):
         self.state_update()
         return True
         
+    def on_touch_up(self, touch):
+        if touch.ud['mode'] != "create_s":
+            return True
+        if touch.ud['statePos'] == [self.x, self.y]:
+            return True
+        UndoStateMove(self, self.x - touch.ud['statePos'][0], self.y - touch.ud['statePos'][1])
+        
     def edit_name(self):
         StateNamer(self).open()
         
@@ -332,7 +358,7 @@ class State(Widget):
         i = 0
         while statefuncs.state_named(str(i)):
             i += 1
-        self.set_text(str(i))
+        self.set_text(text = str(i), undoPossible = False)
         
     def state_update(self):
         for t in self.transitions:
@@ -353,11 +379,15 @@ class State(Widget):
             self.colours[0] = Color(1, 1, 1, 0)
         self.state_update()
         
-    def set_text(self, text):
+    def set_text(self, text, undoPossible = True):
+        if text != self.name:
+            if undoPossible:
+                UndoStateName(self, self.name)
         self.name = text
         self.label.text = text
         
     def final_state_toggle(self):
+        UndoStateFinal(self)
         self.final_state(not self.final)
         
     def final_state(self, final):
@@ -380,7 +410,10 @@ class State(Widget):
             self.colours[4] = Color(1, 1, 1)
         self.final_state(self.final)
         
-    def set_start_state(self):
+    def set_start_state(self, undoPossible = False):
+        if not self.start:
+            if undoPossible:
+                UndoStateStart(statefuncs.find_start_state(), self)
         statefuncs.remove_start_state()
         self.start_state(True)
         
@@ -409,14 +442,18 @@ class State(Widget):
         statefuncs.move_all(dx, dy)
             
     def destroy_self(self):
+        UndoStateDeleteStop()
         while len(self.transitions):
             t = self.transitions[0]
+            UndoTransitionDelete(t)
             t.destroy_self()
         globvars.AllItems['stateMachine'].remove_widget(self)
+        index = globvars.AllItems['states'].index(self)
         globvars.AllItems['states'].remove(self)
         if self.start:
             if len(globvars.AllItems['states']):
-                globvars.AllItems['states'][0].set_start_state()
+                globvars.AllItems['states'][0].set_start_state(undoPossible = True)
+        UndoStateDeleteStart(self, index)
 
 class _StateMachine(FloatLayout):
     def __init__(self, *args, **kwargs):
@@ -453,6 +490,8 @@ class _StateMachine(FloatLayout):
             state = create_state(touch.x, touch.y, start = start)
             if state is not None:
                 touch.ud['touched'] = state
+                touch.ud['statePos'] = [state.x, state.y]
+                UndoStateCreate(state)
             
     def move_all_touch(self, touch):
         statefuncs.move_all(touch.x - touch.ud['last'][0], touch.y - touch.ud['last'][1])
