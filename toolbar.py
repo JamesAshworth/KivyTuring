@@ -7,8 +7,6 @@ import globvars
 class Toolbar(ScreenManager):
     def __init__(self, *args, **kwargs):
         super(Toolbar, self).__init__(*args, **kwargs)
-        self.size_hint = (1, None)
-        self.height = 60
         screen = Screen(name = "build")
         screen.add_widget(BuildToolbar())
         self.add_widget(screen)

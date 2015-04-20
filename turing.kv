@@ -6,6 +6,10 @@
     font_size: 10
     halign: 'center'
     
+<Toolbar>:
+    size_hint: 1, None
+    height: 60
+    
 <TapeCell>:
     font_size: 20
     padding: [5, ( self.height - self.line_height ) / 2]
@@ -14,6 +18,10 @@
     font_size: 20
     halign: 'center'
     valign: 'middle'
+    
+<TapeBar>:
+    height: 100
+    size_hint: 1, None
     
 <StateLabel>:
     font_size: 20
@@ -25,6 +33,13 @@
     size_hint: None, None
     size: 450, 220
     
+<InfoBox>:
+    size: 450, 150
+    
+<SpacedContent>:
+    size_hint: 1, None
+    height: 30
+    
 <RotateLabel>:
     font_size: 20
     halign: 'center'
@@ -34,6 +49,14 @@
 <TapeUnit>:
     width: 50
     size_hint: None, 1
+    
+<MenuScreen>:
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
     
 <Toolbar>:
     canvas.before:

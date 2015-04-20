@@ -10,8 +10,6 @@ import globvars
 class SpacedContent(BoxLayout):
     def __init__(self, *args, **kwargs):
         super(SpacedContent, self).__init__(*args, **kwargs)
-        self.size_hint = (1, None)
-        self.height = 30
         super(SpacedContent, self).add_widget(Widget())
         self.lastwidget = Widget()
         super(SpacedContent, self).add_widget(self.lastwidget)
@@ -179,7 +177,6 @@ class InfoBox(CommonPopup):
         self.title = title
         self.message.text = message
         self.button.text = "Ok"
-        self.size = (450, 150)
         # Create the user input section
         # Add this to the correct area
         # Set the parent and assemble the popup

@@ -20,8 +20,6 @@ class ShiftButton(Button):
 class Tapebar(BoxLayout):
     def __init__(self, *args, **kwargs):
         super(Tapebar, self).__init__(*args, **kwargs)
-        self.size_hint = (1, None)
-        self.height = 100
         self.add_widget(ResetButton(text = "Reset\nTape\nPosition"))
         self.add_widget(ShiftButton(direction = -1))
         screen = Screen()
