@@ -29,9 +29,16 @@ class CommonPopup(Popup):
         self.feedback = Label()
         self.buttonholder = SpacedContent()
         self.button = Button()
+        self.cancel = Button(text = "Cancel")
         self.buttonholder.add_widget(self.button)
+        self.buttonholder.add_widget(self.cancel)
         self.button.bind(on_press=self.dismiss)
+        self.cancel.bind(on_press=self.on_cancel)
         self.bind(on_dismiss=self.post_process)
+        
+    def on_cancel(self, instance):
+        self.unbind(on_dismiss=self.post_process)
+        self.dismiss()
         
     def assemble(self):
         self.content.add_widget(self.message)
@@ -50,7 +57,7 @@ class CommonPopup(Popup):
         pass
 
 class StateNamer(CommonPopup):
-    def __init__(self, object, *args, **kwargs):
+    def __init__(self, object, text, *args, **kwargs):
         # Forward send
         super(StateNamer, self).__init__(*args, **kwargs)
         # Set the key info for the user
@@ -58,7 +65,7 @@ class StateNamer(CommonPopup):
         self.message.text = "Please provide a unique name for this state:"
         self.button.text = "Set Name"
         # Create the user input section
-        self.textinput = StateTextInput(width = 80, size_hint = (None, 1), multiline = False, length = 4)
+        self.textinput = StateTextInput(width = 80, size_hint = (None, 1), multiline = False, length = 4, text = text)
         self.textinput.bind(on_text_validate=self.dismiss)
         # Add this to the correct area
         self.entry.add_widget(self.textinput)
@@ -85,7 +92,7 @@ class StateNamer(CommonPopup):
         self.textinput.focus = True
 
 class TransitionIdentifier(CommonPopup):
-    def __init__(self, object, *args, **kwargs):
+    def __init__(self, object, read, write, move, *args, **kwargs):
         # Forward send
         super(TransitionIdentifier, self).__init__(*args, **kwargs)
         # Set the key info for the user
@@ -93,9 +100,9 @@ class TransitionIdentifier(CommonPopup):
         self.message.text = "Please provide read/write/movement info for this transition:"
         self.button.text = "Set Info"
         # Create the user input section
-        self.textread = AlphabetTextInput(width = 30, size_hint = (None, 1), multiline = False)
-        self.textwrite = AlphabetTextInput(width = 30, size_hint = (None, 1), multiline = False)
-        self.textmove = LeftRightTextInput(width = 30, size_hint = (None, 1), multiline = False)
+        self.textread = AlphabetTextInput(width = 30, size_hint = (None, 1), multiline = False, text = read)
+        self.textwrite = AlphabetTextInput(width = 30, size_hint = (None, 1), multiline = False, text = write)
+        self.textmove = LeftRightTextInput(width = 30, size_hint = (None, 1), multiline = False, text = move)
         self.textread.bind(on_text_validate=self.set_focus_text2)
         self.textwrite.bind(on_text_validate=self.set_focus_text3)
         self.textmove.bind(on_text_validate=self.dismiss)
@@ -130,7 +137,7 @@ class TransitionIdentifier(CommonPopup):
             self.feedback.text = "Movement must be [L]eft or [R]ight"
             Clock.schedule_once(self.set_focus_text2)
             return True
-        self.object.set_info(self.textread.text + "/" + self.textwrite.text + "/" + self.textmove.text)
+        self.object.set_initial_info(self.textread.text + "/" + self.textwrite.text + "/" + self.textmove.text)
         return False
         
     def set_focus_text(self, instance):

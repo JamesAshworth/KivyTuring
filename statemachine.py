@@ -84,7 +84,7 @@ class Transition(Widget):
         if touch.ud['mode'] == "create_t":
             touch.ud['transitionPos'] = [self.midpoint.x, self.midpoint.y]
             if touch.is_double_tap:
-                self.edit_info()
+                self.edit_info(read = self.read_value(), write = self.write_value(), move = self.move_symbol())
         elif touch.ud['mode'] == "delete":
             UndoTransitionDelete(self)
             self.destroy_self()
@@ -122,9 +122,11 @@ class Transition(Widget):
         if not statefuncs.identify_state_in(touch):
             return True
         self.endstate = touch.ud['touched']
+        self.edit_info()
+        
+    def unfinished_on_touch_up_after_name(self):
         UndoTransitionCreate(self)
         self.finish_transition()
-        self.edit_info()
             
     def finish_transition(self, resetMidpoint = True):
         if resetMidpoint:
@@ -144,22 +146,30 @@ class Transition(Widget):
         self.update()
         globvars.AllItems['stateMachine'].states_to_front()
         
-    def edit_info(self):
-        TransitionIdentifier(self).open()
+    def edit_info(self, read = "", write = "", move = ""):
+        TransitionIdentifier(object = self, read = read, write = write, move = move).open()
         
     def set_info(self, text):
         self.info.update_info(text)
+        
+    def set_initial_info(self, text):
+        self.set_info(text)
+        if not self.complete:
+            self.unfinished_on_touch_up_after_name()
         
     def read_value(self):
         return self.info.label.text[0]
         
     def write_value(self):
         return self.info.label.text[2]
+        
+    def move_symbol(self):
+        return self.info.label.text[4]
     
     def move_value(self):
-        if self.info.label.text[4] == "L":
+        if self.move_symbol() == "L":
             return -1
-        if self.info.label.text[4] == "R":
+        if self.move_symbol() == "R":
             return 1
         return 0
         
@@ -319,7 +329,7 @@ class State(Widget):
         
     def on_touch_down(self, touch):
         if touch.ud['mode'] == "final":
-            self.final_state_toggle()
+            self.final_state_toggle(undoPossible = True)
         if touch.ud['mode'] == "start":
             self.set_start_state(undoPossible = True)
         if touch.ud['mode'] == "delete":
@@ -352,7 +362,7 @@ class State(Widget):
         UndoStateMove(self, self.x - touch.ud['statePos'][0], self.y - touch.ud['statePos'][1])
         
     def edit_name(self):
-        StateNamer(self).open()
+        StateNamer(object = self, text = self.name).open()
         
     def default_name(self):
         i = 0
@@ -386,8 +396,9 @@ class State(Widget):
         self.name = text
         self.label.text = text
         
-    def final_state_toggle(self):
-        UndoStateFinal(self)
+    def final_state_toggle(self, undoPossible = False):
+        if undoPossible:
+            UndoStateFinal(self)
         self.final_state(not self.final)
         
     def final_state(self, final):
@@ -536,6 +547,8 @@ class _StateMachine(FloatLayout):
             
     def on_touch_up(self, touch):
         if self.outofbounds:
+            return False
+        if not 'touched' in touch.ud:
             return False
         if touch.ud['touched'] != self:
             return touch.ud['touched'].on_touch_up(touch)
