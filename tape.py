@@ -2,6 +2,7 @@ from inputs import AlphabetTextInput
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
+from math import ceil
 import globvars
 
 class TapeCell(AlphabetTextInput):
@@ -42,67 +43,63 @@ class Tape(FloatLayout):
         super(Tape, self).__init__(*args, **kwargs)
         self.offset = 0
         self.cells = []
-        self.labels = [0, 0]
+        self.labels = [0, -1]
+        self.leftmost = 0
+        self.numcells = 0
+        self.cellwidth = TapeUnit("").width
         self.outofbounds = False
         self.allowshift = True
         globvars.AllItems['tape'] = self
         
-    def make_cells(self):
-        if not len(self.cells):
-            self.cells = [TapeUnit(pos = (self.x, self.y), text = "0")]
-            self.cells[0].selected(True)
-            self.add_widget(self.cells[0])
-            return True
-        if self.cells[0].x > self.x:
-            return self.make_cell(0)
-        if self.cells[-1].x + self.cells[-1].width <= self.x + self.width:
-            return self.make_cell(1)
-        return False
-        
     def make_cell(self, end):
         if end == 0:
             self.labels[0] -= 1
-            self.cells.insert(0, TapeUnit(pos = ((self.cells[0].x - self.cells[0].width), self.y), text = str(self.labels[0])))
+            self.cells.insert(0, TapeUnit(pos = (self.x + self.width, self.y), text = str(self.labels[0])))
             self.add_widget(self.cells[0])
             return True
         if end == 1:
             self.labels[1] += 1
-            self.cells.append(TapeUnit(pos = ((self.cells[-1].x + self.cells[-1].width), self.y), text = str(self.labels[1])))
+            self.cells.append(TapeUnit(pos = (self.x + self.width, self.y), text = str(self.labels[1])))
             self.add_widget(self.cells[-1])
             return True
         return False
         
     def do_layout(self, *args, **kwargs):
         super(Tape, self).do_layout(*args, **kwargs)
-        self.fill_cells()
+        numcells = int(ceil(float(self.width) / float(self.cellwidth)))
+        if self.numcells != numcells:
+            self.numcells = numcells
+            self.fill_cells()
+            self.select_cell(0)
+            self.reset_position()
         
     def fill_cells(self):
-        while self.make_cells():
-            pass
+        self.move_cells(0)
+            
+    def get_cell(self, location):
+        location -= self.labels[0]
+        return self.exists(location)
         
-    def select_cell(self, location):
+    def select_cell(self, location, shift = True):
         location -= self.labels[0]
         location = self.exists(location)
         for cell in self.cells:
             cell.selected(False)
         self.cells[location].selected(True)
-        self.on_screen(location)
+        if shift:
+            self.center_cell(location + self.labels[0])
         
     def exists(self, index):
-        if index == -1:
+        while index < 0:
             self.make_cell(0)
-            return 0
-        if index == len(self.cells):
+            index += 1
+        while index >= len(self.cells):
             self.make_cell(1)
-            return index
         return index
         
-    def on_screen(self, index):
-        cell = self.cells[index]
-        if cell.x + cell.width > self.x + self.width:
-            self.move_cells((self.x + self.width) - (cell.x + cell.width))
-        if cell.x < self.x:
-            self.move_cells((self.x - cell.x))
+    def center_cell(self, location):
+        self.offset = (location - self.numcells / 2 + 1) * self.cellwidth
+        self.move_cells(0)
         
     def get_value(self, location):
         location -= self.labels[0]
@@ -130,18 +127,21 @@ class Tape(FloatLayout):
             return
         self.labels[0] += offset
         self.labels[1] += offset
+        self.offset += offset * self.cellwidth
+        self.leftmost += offset
         for i in range(len(self.cells)):
             self.cells[i].update_label(str(self.labels[0] + i))
             self.cells[i].selected(False)
-            self.cells[i].move(offset * self.cells[0].width)
-        self.fill_cells()
-        self.select_cell(0)
+        self.move_cells(offset * self.cellwidth)
+        self.select_cell(0, shift = False)
         
     def move_cells(self, offset):
-        for cell in self.cells:
-            cell.move(offset)
-        self.offset -= (offset)
-        self.fill_cells()
+        self.offset -= offset
+        for i in range(self.numcells):
+            self.cells[self.get_cell(self.leftmost + i)].pos = (self.x - self.cellwidth, self.y)
+        self.leftmost = int(round(float(self.offset) / float(self.cellwidth)))
+        for i in range(self.numcells):
+            self.cells[self.get_cell(self.leftmost + i)].pos = (self.x + (self.cellwidth * i), self.y)
             
     def on_touch_down(self, touch):
         self.outofbounds = False
@@ -163,6 +163,4 @@ class Tape(FloatLayout):
         touch.ud['last'] = touch.x
         
     def reset_position(self):
-        for cell in self.cells:
-            cell.move(self.offset)
-        self.offset = 0
+        self.move_cells(self.offset)
