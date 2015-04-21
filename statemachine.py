@@ -58,6 +58,14 @@ class TransitionInfo(ScatterLayout):
             self.label.text = text
         else:
             self.label.text = text
+            
+    def set_rotation(self, angle):
+        if angle == 180 or angle == -180:
+            angle = 0
+            self.label.text = "\n\n" + self.label.text.replace("\n", "")
+        else:
+            self.label.text = self.label.text.replace("\n", "") + "\n\n"
+        self.rotation = angle
 
 class TransitionGrabber(Widget):
     def update(self):
@@ -186,6 +194,8 @@ class Transition(Widget):
             dx = self.endpoint[0] - self.startpoint[0]
             dy = self.endpoint[1] - self.startpoint[1]
         length = sqrt((dx ** 2) + (dy ** 2))
+        if not length:
+            length = 1
         dx *= 10 / length
         dy *= 10 / length
         bpoint1 = list(fpoint)
@@ -217,7 +227,7 @@ class Transition(Widget):
         
     def do_move_along_line(self, instance):
         old = self.find_point_on_line(self.alongline)
-        self.alongline += 0.01
+        self.alongline += globvars.AllItems['animationStep']
         new = self.find_point_on_line(self.alongline)
         statefuncs.move_all(old[0] - new[0], old[1] - new[1])
         if self.alongline >= 0.25:
@@ -248,7 +258,7 @@ class Transition(Widget):
         centre = self.line_middle()
         self.canvas.add(Triangle(center = (centre[0] - 10, centre[1] - 10), points = self.direction_triangle()))
         self.info.pos = (centre[0] - 30, centre[1] - 30)
-        self.info.rotation = self.rotation_angle()
+        self.info.set_rotation(self.rotation_angle())
         globvars.AllItems['stateMachine'].remove_widget(self.midpoint)
         if self.display:
             self.midpoint.update()
