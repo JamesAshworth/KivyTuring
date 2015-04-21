@@ -72,6 +72,10 @@ class StateNamer(CommonPopup):
         # Set the parent and assemble the popup
         self.object = object
         self.assemble()
+        
+    def open(self):
+        super(StateNamer, self).open()
+        self.textinput.select_all()
     
     def post_process(self, instance):
         if self.textinput.text == "":
@@ -115,6 +119,10 @@ class TransitionIdentifier(CommonPopup):
         # Set the parent and assemble the popup
         self.object = object
         self.assemble()
+        
+    def open(self):
+        super(TransitionIdentifier, self).open()
+        self.textread.select_all()
     
     def post_process(self, instance):
         if self.textread.text == "":
