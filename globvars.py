@@ -14,3 +14,5 @@ def create():
     AllItems['movementClock'] = create
     AllItems['undo'] = []
     AllItems['redo'] = []
+    AllItems['animation'] = True
+    AllItems['animationStep'] = 1
