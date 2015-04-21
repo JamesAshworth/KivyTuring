@@ -7,6 +7,7 @@ def begin_simulation():
     globvars.AllItems['simState'] = statefuncs.find_start_and_centre()
     globvars.AllItems['simState'].highlighted(True)
     globvars.AllItems['simCell'] = 0
+    globvars.AllItems['tape'].select_cell(0)
     globvars.AllItems['tape'].save_values()
     globvars.AllItems['tape'].allowshift = False
     globvars.AllItems['running'] = False
