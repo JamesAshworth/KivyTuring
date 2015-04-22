@@ -17,6 +17,9 @@ def do_run():
         do_step()
 
 def do_step():
+    if globvars.AllItems['inStep']:
+        return
+    globvars.AllItems['inStep'] = True
     readVal = globvars.AllItems['tape'].get_value(globvars.AllItems['simCell'])
     for t in globvars.AllItems['simState'].transitions:
         if t.startstate == globvars.AllItems['simState']:
@@ -28,6 +31,8 @@ def do_step():
                 globvars.AllItems['simState'] = t.endstate
                 return
             
+    globvars.AllItems['inStep'] = False
+    globvars.AllItems['pauseButton'].on_press()
     if globvars.AllItems['simState'].final:
         InfoBox(title="Complete", message="Simulation halted with answer 'Yes'").open()
     else:

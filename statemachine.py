@@ -237,6 +237,7 @@ class Transition(Widget):
         if self.alongline < 1:
             return True
         self.alongline = 0
+        globvars.AllItems['inStep'] = False
         logic.do_run()
         return False
         
