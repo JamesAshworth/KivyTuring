@@ -103,15 +103,27 @@ class Tape(FloatLayout):
         
     def get_value(self, location):
         location -= self.labels[0]
+        location = self.exists(location)
         if self.cells[location].cell.text == "":
             return "_"
         return self.cells[location].cell.text
         
     def set_value(self, location, value):
         location -= self.labels[0]
+        location = self.exists(location)
         if value == "_":
             value = ""
         self.cells[location].cell.text = value
+        
+    def load_tape(self, tapestring):
+        try:
+            location = tapestring.index('*')
+            tapestring.replace('*', '')
+        except:
+            location = 0
+        for value in list(tapestring):
+            self.set_value(location, value)
+            location += 1
         
     def save_values(self):
         for cell in self.cells:
