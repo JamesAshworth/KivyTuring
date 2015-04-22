@@ -160,13 +160,13 @@ class Transition(Widget):
             self.unfinished_on_touch_up_after_name()
         
     def read_value(self):
-        return self.info.label.text[0]
+        return self.info.label.text.replace("\n", "")[0]
         
     def write_value(self):
-        return self.info.label.text[2]
+        return self.info.label.text.replace("\n", "")[2]
         
     def move_symbol(self):
-        return self.info.label.text[4]
+        return self.info.label.text.replace("\n", "")[4]
     
     def move_value(self):
         if self.move_symbol() == "L":
