@@ -206,7 +206,9 @@ class Transition(Widget):
         
     def move_along_line(self):
         globvars.AllItems['movementClock'] = self.do_move_along_line
-        Clock.schedule_interval(self.do_move_along_line, 0.01)
+        self.linecolour = Color(0.5, 0.5, 0)
+        self.update()
+        Clock.schedule_interval(self.do_move_along_line, 0.05)
         
     def find_point_on_line(self, a):
         p = self.midpoints_calc()
@@ -222,6 +224,8 @@ class Transition(Widget):
     def do_move_along_line(self, instance):
         old = self.find_point_on_line(self.alongline)
         self.alongline += globvars.AllItems['animationStep']
+        if self.alongline > 1:
+            self.alongline = 1
         new = self.find_point_on_line(self.alongline)
         statefuncs.move_all(old[0] - new[0], old[1] - new[1])
         if self.alongline >= 0.25:
@@ -231,6 +235,8 @@ class Transition(Widget):
         if self.alongline < 1:
             return True
         self.alongline = 0
+        self.linecolour = Color(0, 0, 0)
+        self.update()
         globvars.AllItems['inStep'] = False
         logic.do_run()
         return False
@@ -248,7 +254,7 @@ class Transition(Widget):
     def update(self):
         pd = globvars.AllItems['linethickness']
         self.canvas.clear()
-        self.canvas.add(Color(0, 0, 0))
+        self.canvas.add(self.linecolour)
         self.canvas.add(Line(bezier = self.startpoint + self.midpoints_calc() + self.endpoint, width = pd))
         centre = self.line_middle()
         self.canvas.add(Triangle(center = (centre[0] - 10, centre[1] - 10), points = self.direction_triangle()))
