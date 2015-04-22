@@ -17,6 +17,12 @@ def do_redo():
     if not len(globvars.AllItems['redo']):
         globvars.AllItems['redoButton'].disabled = True
         
+def clear_undo():
+    globvars.AllItems['redo'] = []
+    globvars.AllItems['redoButton'].disabled = True
+    globvars.AllItems['undo'] = []
+    globvars.AllItems['undoButton'].disabled = True
+        
 #----------------------------------------------------------
 # Name: UndoRecord
 # 
