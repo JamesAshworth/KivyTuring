@@ -14,19 +14,12 @@ import transitionfuncs
 import logic
 from undo import *
 
-def create_state(x, y, name = None, final = False, start = False, user = True):  
-    while statefuncs.collide_state(x, y):
-        if user:
-            return None
-        else:
-            x += 50 #Something cleverer maybe
+def create_state(x, y, name = None):
     state = State(pos = (x - 25, y - 25))
     globvars.AllItems['stateMachine'].add_widget(state)
     globvars.AllItems['states'].append(state)
     if name is not None:
         state.set_text(name)
-    state.start_state(start)
-    state.final_state(final)
     return state
         
 def create_transition(startstate, endstate, info, x, y):
@@ -35,7 +28,8 @@ def create_transition(startstate, endstate, info, x, y):
     t.endstate = endstate
     t.finish_transition()
     t.set_info(info)
-    t.update_midpoint_pos(x, y)
+    if (x is None) or (y is None):
+        t.update_midpoint_pos(x, y)
     return t
 
 class StateLabel(Label):
@@ -506,10 +500,9 @@ class _StateMachine(FloatLayout):
         touch.ud['touched'] = self
                 
         if self.mode == "create_s":
-            start = False
-            if not len(globvars.AllItems['states']):
-                start = True
-            state = create_state(touch.x, touch.y, start = start)
+            start = (len(globvars.AllItems['states']) == 0)
+            state = create_state(touch.x, touch.y)
+            state.start_state(start)
             if state is not None:
                 touch.ud['touched'] = state
                 touch.ud['statePos'] = [state.x, state.y]
