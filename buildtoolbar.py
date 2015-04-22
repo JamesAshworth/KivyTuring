@@ -1,11 +1,16 @@
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from buttons import ExtendButton, StickyButton, SwitchButton, Spacer, UndoButton
+from loadmachine import FileChooser
 import globvars
 
 class CentreButton(ExtendButton):
     def on_press(self):
         globvars.AllItems['stateMachine'].centre_machine()
+        
+class LoadButton(ExtendButton):
+    def on_press(self):
+        FileChooser().open()
         
 class AlphabetButton(ExtendButton):
     def on_press(self):
@@ -33,6 +38,7 @@ class BuildToolbar(BoxLayout):
         self.add_widget(Spacer())
         self.add_widget(globvars.AllItems['undoButton'])
         self.add_widget(globvars.AllItems['redoButton'])
+        self.add_widget(LoadButton(text = "Load"))
         self.add_widget(Spacer())
         self.add_widget(SwitchButton(mode = "run", text = "Run", direction = "left", newmode = "run", button = None))
 
