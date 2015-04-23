@@ -28,7 +28,7 @@ def create_transition(startstate, endstate, info, x, y):
     t.endstate = endstate
     t.finish_transition()
     t.set_info(info)
-    if (x is None) or (y is None):
+    if not((x is None) or (y is None)):
         t.update_midpoint_pos(x, y)
     return t
 
@@ -81,6 +81,7 @@ class Transition(Widget):
         self.display    = True
         self.complete   = False
         self.alongline  = 0
+        self.linecolour = Color(0, 0, 0)
         
     def on_touch_down(self, touch):
         if touch.ud['mode'] == "create_t":
