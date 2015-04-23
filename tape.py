@@ -115,7 +115,14 @@ class Tape(FloatLayout):
             value = ""
         self.cells[location].cell.text = value
         
+    def get_tape(self):
+        tape = []
+        for location in range(self.labels[0], self.labels[1] + 1):
+            tape.append(self.get_value(location))
+        return tape
+        
     def load_tape(self, tapestring):
+        self.clear_tape()
         try:
             location = tapestring.index('*')
             tapestring.replace('*', '')
@@ -124,6 +131,10 @@ class Tape(FloatLayout):
         for value in list(tapestring):
             self.set_value(location, value)
             location += 1
+            
+    def clear_tape(self):
+        for cell in self.cells:
+            cell.cell.text = ""
         
     def save_values(self):
         for cell in self.cells:
