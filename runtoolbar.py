@@ -3,6 +3,7 @@ from kivy.clock import Clock
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.slider import Slider
 from buttons import ExtendButton, StickyButton, SwitchButton, Spacer
+from logicthread import LogicThread
 import globvars
 import logic
 
@@ -46,6 +47,13 @@ class PauseButton(StickyButton):
         self.selected(False)
         globvars.AllItems['running'] = False
         
+class CompletionButton(StickyButton):
+    def on_press(self):
+        super(CompletionButton, self).on_press()
+        # Sticky buttons leave themselves selected on press, so we deselect
+        self.selected(False)
+        LogicThread().start()
+        
 class ResetButton(StickyButton):
     def on_press(self):
         super(ResetButton, self).on_press()
@@ -65,6 +73,7 @@ class RunToolbar(BoxLayout):
         self.add_widget(RunButton(text = "Run"))
         self.add_widget(globvars.AllItems['pauseButton'])
         self.add_widget(ResetButton(text = "Reset"))
+        self.add_widget(CompletionButton(text = "Run\nto\nFinish"))
         self.add_widget(Spacer())
         self.add_widget(SpeedSlider())
         self.add_widget(Spacer())
