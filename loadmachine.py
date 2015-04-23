@@ -51,8 +51,8 @@ def load_machine(filename):
             name = None
             
         try:
-            x = xmlstate.attrib['x']
-            y = xmlstate.attrib['y']
+            x = int(xmlstate.attrib['x'])
+            y = int(xmlstate.attrib['y'])
             if statefuncs.collide_state(x, y):
                 x, y = nextposition()
         except:
@@ -78,8 +78,8 @@ def load_machine(filename):
         if (read in alphabetstring) and (write in alphabetstring) and (move in "LR"):
             info = read + "/" + write + "/" + move
             try:
-                x = xmltran.attrib['x']
-                y = xmltran.attrib['y']
+                x = int(xmltran.attrib['x']) - globvars.AllItems['gs'] / 2
+                y = int(xmltran.attrib['y']) - globvars.AllItems['gs'] / 2
             except:
                 x, y = None, None
             
