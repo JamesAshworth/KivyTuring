@@ -66,7 +66,7 @@ class TransitionGrabber(Widget):
         gs = globvars.AllItems['gs']
         self.canvas.clear()
         self.canvas.add(Color(0, 1, 0))
-        self.canvas.add(Rectangle(size = (gs, gs), pos = self.pos))
+        self.canvas.add(Rectangle(size = (gs / 2, gs / 2), pos = (self.x + gs / 4, self.y + gs / 4)))
 
 class Transition(Widget):
     def __init__(self, *args, **kwargs):
