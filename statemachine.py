@@ -576,6 +576,11 @@ class _StateMachine(FloatLayout):
         avgy = (maxy + miny) / 2
         statefuncs.move_all(self.center_x - avgx, self.center_y - avgy)
         
+    def clear_machine(self):
+        self.clear_widgets()
+        globvars.AllItems['states'] = []
+        globvars.AllItems['transitions'] = []
+        
     def define_alphabet(self):
         AlphabetEntry().open()
         
