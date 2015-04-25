@@ -6,14 +6,14 @@ import globvars
 import logic
 
 class ProgressPopup(CommonPopup):
-    def __init__(self, thread, *args, **kwargs):
+    def __init__(self, thread = None, max = 100, cancel = True, *args, **kwargs):
         super(ProgressPopup, self).__init__(*args, **kwargs)
         self.thread = thread
-        self.title = "State Machine Running..."
-        self.progress = ProgressBar()
+        self.progress = ProgressBar(max = max)
         self.content.add_widget(self.progress)
         self.content.add_widget(self.message)
-        self.content.add_widget(self.buttonholder)
+        if cancel:
+            self.content.add_widget(self.buttonholder)
         self.buttonholder.remove_widget(self.button)
         
     def on_cancel(self, instance):
@@ -25,6 +25,7 @@ class LogicThread(Thread):
         super(LogicThread, self).__init__(*args, **kwargs)
         globvars.AllItems['logicThread'] = self
         self.running = True
+        self.finalised = False
         self.states = {}
         self.tape = []
         self.position = 0
@@ -32,7 +33,7 @@ class LogicThread(Thread):
         self.zero = 0
         self.state = ""
         self.symbol = ""
-        self.progress = ProgressPopup(thread = self)
+        self.progress = ProgressPopup(thread = self, title = "State Machine Running...")
         
     def load_machine(self):
         for state in globvars.AllItems['states']:
@@ -53,7 +54,7 @@ class LogicThread(Thread):
                     self.states[sname][tread]['to'] = transition.endstate.name
         
         self.tape = globvars.AllItems['tape'].get_tape()
-        self.position = (- globvars.AllItems['tape'].labels[0])
+        self.position = globvars.AllItems['tape'].zeroposition
         self.symbol = self.tape[self.position]
         self.zero = self.position
         
@@ -63,7 +64,9 @@ class LogicThread(Thread):
         self.progress.open()
         while self.running:
             self.do_run()
-    
+        if not self.finalised:
+            self.do_finalise()
+            
     def do_run(self):
         self.steps += 1
         if not (self.steps % 1000):
@@ -81,23 +84,24 @@ class LogicThread(Thread):
                 self.tape.append('_')
             self.symbol = self.tape[self.position]
         except KeyError:
-            self.progress.dismiss()
+            self.do_finalise()
             if self.states[self.state]['final']:
                 InfoBox(title="Complete", message=("Simulation halted with answer 'Yes' in " + str(self.steps - 1) + " steps")).open()
             else:
                 InfoBox(title="Complete", message=("Simulation halted with answer 'No' in " + str(self.steps - 1) + " steps")).open()
-            self.running = False
-"""         tapestring = ""
-            self.position -= self.zero
-            for symbol in self.tape:
-                if not self.zero:
-                    tapestring += "*"
-                tapestring += symbol
-                self.zero -= 1
-            globvars.AllItems['tape'].load_tape(tapestring)
-            globvars.AllItems['tape'].select_cell(self.position)
-            for state in globvars.AllItems['states']:
-                state.highlighted(False)
-                if state.name == self.state:
-                    state.highlighted(True)
-                    state.move_to_centre()"""
+                
+    def do_finalise(self):
+        self.finalised = True
+        self.progress.dismiss()
+        self.running = False
+        self.position -= self.zero
+        globvars.AllItems['tape'].tape = self.tape
+        globvars.AllItems['tape'].zeroposition = self.zero
+        globvars.AllItems['tape'].select_cell(self.position)
+        globvars.AllItems['simCell'] = self.position
+        for state in globvars.AllItems['states']:
+            state.highlighted(False)
+            if state.name == self.state:
+                globvars.AllItems['simState'] = state
+                state.highlighted(True)
+                state.move_to_centre()
