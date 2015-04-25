@@ -9,7 +9,7 @@ def begin_simulation():
     globvars.AllItems['simCell'] = 0
     globvars.AllItems['tape'].select_cell(0)
     globvars.AllItems['tape'].save_values()
-    globvars.AllItems['tape'].allowshift = False
+    globvars.AllItems['tape'].allowedits = False
     globvars.AllItems['running'] = False
     
 def do_run():
@@ -43,7 +43,7 @@ def end_simulation():
     globvars.AllItems['simCell'] = None
     globvars.AllItems['tape'].select_cell(0)
     globvars.AllItems['tape'].restore_values()
-    globvars.AllItems['tape'].allowshift = True
+    globvars.AllItems['tape'].allowedits = True
     globvars.AllItems['tape'].reset_position()
     statefuncs.remove_highlight()
     
