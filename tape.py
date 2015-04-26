@@ -21,6 +21,10 @@ class TapeCell(AlphabetTextInput):
             value = "_"
         globvars.AllItems['tape'].set_value(self.parent.get_label(), value)
         
+    def on_touch_down(self, touch):
+        super(TapeCell, self).on_touch_down(touch)
+        self.focus = globvars.AllItems['tape'].allowedits
+        
 class TapeLabel(Label):
     def collide_point(self, x, y):
         return False
