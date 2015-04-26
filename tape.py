@@ -74,6 +74,7 @@ class Tape(FloatLayout):
         self.cells = []
         self.leftmost = 0
         self.zeroposition = 0
+        self.savezeroposition = 0
         self.numcells = 0
         self.selected = 0
         self.allowedits = True
@@ -154,9 +155,11 @@ class Tape(FloatLayout):
         
     def save_values(self):
         self.savetape = list(self.tape)
+        self.savezeroposition = self.zeroposition
             
     def restore_values(self):
         self.tape = list(self.savetape)
+        self.zeroposition = self.savezeroposition
         self.display_tape()
         
     def shift_cells(self, offset):
