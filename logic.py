@@ -41,14 +41,16 @@ def do_step():
 def end_simulation():
     globvars.AllItems['simState'] = None
     globvars.AllItems['simCell'] = None
+    globvars.AllItems['inStep'] = False
     globvars.AllItems['tape'].select_cell(0)
     globvars.AllItems['tape'].restore_values()
     globvars.AllItems['tape'].allowedits = True
     globvars.AllItems['tape'].reset_position()
     statefuncs.remove_highlight()
+    transitionfuncs.remove_highlight()
+    transitionfuncs.reset_movement()
     
 def reset_simulation():
     end_simulation()
-    transitionfuncs.reset_movement()
     begin_simulation()
     

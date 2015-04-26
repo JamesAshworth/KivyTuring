@@ -205,10 +205,16 @@ class Transition(Widget):
         bpoint2[1] -= dx
         return fpoint + bpoint1 + bpoint2
         
+    def highlighted(self, highlighted):
+        if highlighted:
+            self.linecolour = Color(0.5, 0.5, 0)
+        else:
+            self.linecolour = Color(0, 0, 0)
+        self.update()
+        
     def move_along_line(self):
         globvars.AllItems['movementClock'] = self.do_move_along_line
-        self.linecolour = Color(0.5, 0.5, 0)
-        self.update()
+        self.highlighted(True)
         Clock.schedule_interval(self.do_move_along_line, 0.05)
         
     def find_point_on_line(self, a):
@@ -236,7 +242,7 @@ class Transition(Widget):
         if self.alongline < 1:
             return True
         self.alongline = 0
-        self.linecolour = Color(0, 0, 0)
+        self.highlighted(False)
         self.update()
         globvars.AllItems['inStep'] = False
         logic.do_run()

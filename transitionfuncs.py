@@ -23,3 +23,7 @@ def identify_transition_on(touch):
 def reset_movement():
     for t in globvars.AllItems['transitions']:
         t.alongline = 0
+    
+def remove_highlight():
+    for t in globvars.AllItems['transitions']:
+        t.highlighted(False)

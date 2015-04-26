@@ -31,7 +31,11 @@ class SpeedSlider(Slider):
         
 class BuildButton(SwitchButton):
     def on_press(self):
+        Clock.unschedule(globvars.AllItems['movementClock'])
+        globvars.AllItems['running'] = False
         logic.end_simulation()
+        for button in self.parent.children:
+            button.selected(False)
         super(BuildButton, self).on_press()
         
 class RunButton(StickyButton):
