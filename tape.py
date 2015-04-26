@@ -1,5 +1,4 @@
 from inputs import AlphabetTextInput
-from kivy.properties import BooleanProperty
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
@@ -44,7 +43,10 @@ class TapeUnit(BoxLayout):
     def set_highlight(self, highlighted):
         self.cell.set_highlight(highlighted)
         
-    def set_value(self, value):
+    def set_info(self, text, value):
+        text = str(text)
+        self.label.font_size = min(80 / len(text), 20)
+        self.label.text = text
         if value == "_":
             value = ""
         self.cell.text = value
@@ -54,11 +56,6 @@ class TapeUnit(BoxLayout):
         if value == "":
             value = "_"
         return value
-        
-    def set_label(self, text):
-        text = str(text)
-        self.label.font_size = min(80 / len(text), 20)
-        self.label.text = text
         
     def get_label(self):
         if self.label.text == "":
@@ -109,8 +106,7 @@ class Tape(FloatLayout):
         location = self.leftmost
         for cell in self.cells:
             self.exists(location)
-            cell.set_value(self.tape[self.zeroposition + location])
-            cell.set_label(location)
+            cell.set_info(location, self.tape[self.zeroposition + location])
             cell.set_highlight(location == self.selected)
             cell.defocus()
             location += 1
