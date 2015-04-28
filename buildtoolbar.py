@@ -47,4 +47,5 @@ class TuringApp(App):
         return BuildToolbar()
 
 if __name__ == '__main__':
+    globvars.create()
     TuringApp().run()
