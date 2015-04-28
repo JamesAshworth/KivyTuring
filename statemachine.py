@@ -439,10 +439,12 @@ class State(Widget):
             self.colours[4] = Color(1, 1, 1)
         self.final_state(self.final)
         
-    def set_start_state(self, undoPossible = False):
+    def set_start_state(self, undoPossible = False, oldState = None):
         if not self.start:
             if undoPossible:
-                UndoStateStart(statefuncs.find_start_state(), self)
+                if oldState == None:
+                    oldState = statefuncs.find_start_state()
+                UndoStateStart(oldState, self)
         statefuncs.remove_start_state()
         self.start_state(True)
         
@@ -481,7 +483,7 @@ class State(Widget):
         globvars.AllItems['states'].remove(self)
         if self.start:
             if len(globvars.AllItems['states']):
-                globvars.AllItems['states'][0].set_start_state(undoPossible = True)
+                globvars.AllItems['states'][0].set_start_state(undoPossible = True, oldState = self)
         UndoStateDeleteStart(self, index)
 
 class _StateMachine(FloatLayout):
