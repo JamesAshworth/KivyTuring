@@ -1,10 +1,11 @@
 from kivy.uix.widget import Widget
+import savemachine
 import globvars
 
 def do_undo():
     record = globvars.AllItems['undo'].pop()
     globvars.AllItems['redo'].append(record)
-    record.undo()
+    record.do_undo()
     globvars.AllItems['redoButton'].disabled = False
     if not len(globvars.AllItems['undo']):
         globvars.AllItems['undoButton'].disabled = True
@@ -12,7 +13,7 @@ def do_undo():
 def do_redo():
     record = globvars.AllItems['redo'].pop()
     globvars.AllItems['undo'].append(record)
-    record.redo()
+    record.do_redo()
     globvars.AllItems['undoButton'].disabled = False
     if not len(globvars.AllItems['redo']):
         globvars.AllItems['redoButton'].disabled = True
@@ -34,6 +35,18 @@ class UndoRecord(Widget):
         globvars.AllItems['redoButton'].disabled = True
         globvars.AllItems['undo'].append(self)
         globvars.AllItems['undoButton'].disabled = False
+        try:
+            savemachine.save_machine(globvars.AllItems['saveFile'] + "~")
+        except KeyError:
+            pass
+        
+    def do_undo(self):
+        self.undo()
+        savemachine.save_machine(globvars.AllItems['saveFile'] + "~")
+        
+    def do_redo(self):
+        self.redo()
+        savemachine.save_machine(globvars.AllItems['saveFile'] + "~")
         
 #----------------------------------------------------------
 # Name: UndoStateName
