@@ -87,10 +87,11 @@ def load_machine(filename):
             xmltran.attrib['oldstate'] = name
             transitions.append(xmltran)
             
-    try:
-        states[machineSpecs.find('initialstate').attrib['name']].set_start_state()
-    except:
-        raise ValueError('No initialstate specified')
+    if len(states):
+        try:
+            states[machineSpecs.find('initialstate').attrib['name']].set_start_state()
+        except:
+            raise ValueError('No initialstate specified')
         
     try:
         xmlfinalstateslist = machineSpecs.find('finalstates')
