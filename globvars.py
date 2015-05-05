@@ -17,3 +17,4 @@ def create():
     AllItems['animation'] = True
     AllItems['animationStep'] = 0.05
     AllItems['inStep'] = False
+    AllItems['undoDisabled'] = False

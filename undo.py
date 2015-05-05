@@ -35,10 +35,8 @@ class UndoRecord(Widget):
         globvars.AllItems['redoButton'].disabled = True
         globvars.AllItems['undo'].append(self)
         globvars.AllItems['undoButton'].disabled = False
-        try:
+        if not globvars.AllItems['undoDisabled']:
             savemachine.save_machine(globvars.AllItems['saveFile'] + "~")
-        except KeyError:
-            pass
         
     def do_undo(self):
         self.undo()

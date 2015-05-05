@@ -28,12 +28,14 @@ class FileChooser(Popup):
         self.content.add_widget(buttonholder)
         
     def on_select(self, instance, selection):
+        globvars.AllItems['undoDisabled'] = True
         try:
             load_machine(selection[0])
             #switch screen
         except ValueError as err:
             globvars.AllItems['stateMachine'].clear_machine()
             InfoBox(title="Load Failed", message=err.args[0]).open()
+        globvars.AllItems['undoDisabled'] = False
         self.dismiss()
 
 def load_machine(filename):
