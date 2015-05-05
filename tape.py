@@ -146,7 +146,7 @@ class Tape(FloatLayout):
         self.clear_tape()
         try:
             location = tapestring.index('*')
-            tapestring.replace('*', '')
+            tapestring = tapestring.replace('*', '')
         except:
             location = 0
         self.tape = list(tapestring)
