@@ -255,3 +255,20 @@ class UndoTransitionDelete(UndoRecord):
     def redo(self):
         self.transition.destroy_self()
         
+#----------------------------------------------------------
+# Name: UndoTapeEdit
+# 
+# Copies the tape backwards and forwards
+#----------------------------------------------------------
+class UndoTapeEdit(UndoRecord):
+    def __init__(self, tape):
+        super(UndoTapeEdit, self).__init__()
+        self.tape = tape
+        
+    def undo(self):
+        globvars.AllItems['tape'].tape, self.tape = list(self.tape), list(globvars.AllItems['tape'].tape)
+        globvars.AllItems['tape'].display_tape()
+    
+    def redo(self):
+        globvars.AllItems['tape'].tape, self.tape = list(self.tape), list(globvars.AllItems['tape'].tape)
+        globvars.AllItems['tape'].display_tape()
