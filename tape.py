@@ -147,7 +147,7 @@ class Tape(FloatLayout):
         tape.insert(self.zeroposition + 1, '*')
         tape.insert(self.zeroposition, '*')
         while tape[0] == '_':
-            tape.remove(0)
+            tape.pop(0)
         while tape[-1] == '_':
             tape.pop()
         return ''.join(map(str, tape))
