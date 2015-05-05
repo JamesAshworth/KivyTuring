@@ -127,7 +127,7 @@ def load_machine(filename):
     undo.clear_undo()
     globvars.AllItems['stateMachine'].centre_machine()
     globvars.AllItems['move'].on_press()
-    globvars.AllItems['saveFile'] = filename
+    globvars.AllItems['saveFile'] = filename.replace('.xml~', '.xml')
         
 def nextposition():
     machine = globvars.AllItems['stateMachine']
