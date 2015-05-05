@@ -3,6 +3,7 @@ from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
 from math import ceil
+from undo import UndoTapeEdit, UndoTapeShift
 import globvars
 
 class TapeCell(AlphabetTextInput):
@@ -132,7 +133,10 @@ class Tape(FloatLayout):
         
     def set_value(self, location, value):
         self.exists(location)
-        self.tape[self.zeroposition + location] = value
+        if self.tape[self.zeroposition + location] != value:
+            oldtape = list(self.tape)
+            self.tape[self.zeroposition + location] = value
+            UndoTapeEdit(oldtape, self.zeroposition)
         self.display_tape()
         
     def get_tape(self):
@@ -162,10 +166,12 @@ class Tape(FloatLayout):
         self.zeroposition = self.savezeroposition
         self.display_tape()
         
-    def shift_cells(self, offset):
+    def shift_cells(self, offset, undoPossible = True):
         if not self.allowedits:
             return
         self.zeroposition -= offset
+        if undoPossible:
+            UndoTapeShift(offset)
         self.display_tape()
         
     def move_cells(self, touch):
