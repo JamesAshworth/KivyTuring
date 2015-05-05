@@ -142,6 +142,16 @@ class Tape(FloatLayout):
     def get_tape(self):
         return list(self.tape)
         
+    def get_tape_string(self):
+        tape = self.get_tape()
+        tape.insert(self.zeroposition + 1, '*')
+        tape.insert(self.zeroposition, '*')
+        while tape[0] == '_':
+            tape.remove(0)
+        while tape[-1] == '_':
+            tape.pop()
+        return ''.join(map(str, tape))
+        
     def load_tape(self, tapestring):
         self.clear_tape()
         try:
