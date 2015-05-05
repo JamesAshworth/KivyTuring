@@ -54,8 +54,8 @@ def save_machine(filename):
                 xmltransition.set('writesym', str(transition.write_value()))
                 xmltransition.set('newstate', str(transition.endstate.name))
                 xmltransition.set('move', str(transition.move_symbol()))
-                xmltransition.set('x', str(transition.midpoint.center_x))
-                xmltransition.set('y', str(transition.midpoint.center_y))
+                xmltransition.set('x', str(transition.midpoint.x + globvars.AllItems['gs'] / 2))
+                xmltransition.set('y', str(transition.midpoint.y + globvars.AllItems['gs'] / 2))
                 
     indent(root)
     tree = ET.ElementTree(root)
