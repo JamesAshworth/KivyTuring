@@ -259,14 +259,33 @@ class UndoTransitionDelete(UndoRecord):
 # Copies the tape backwards and forwards
 #----------------------------------------------------------
 class UndoTapeEdit(UndoRecord):
-    def __init__(self, tape):
+    def __init__(self, tape, zeroposition):
         super(UndoTapeEdit, self).__init__()
         self.tape = tape
+        self.zeroposition = zeroposition
         
     def undo(self):
         globvars.AllItems['tape'].tape, self.tape = list(self.tape), list(globvars.AllItems['tape'].tape)
+        globvars.AllItems['tape'].zeroposition, self.zeroposition = self.zeroposition, globvars.AllItems['tape'].zeroposition
         globvars.AllItems['tape'].display_tape()
     
     def redo(self):
         globvars.AllItems['tape'].tape, self.tape = list(self.tape), list(globvars.AllItems['tape'].tape)
+        globvars.AllItems['tape'].zeroposition, self.zeroposition = self.zeroposition, globvars.AllItems['tape'].zeroposition
         globvars.AllItems['tape'].display_tape()
+        
+#----------------------------------------------------------
+# Name: UndoTapeShift
+# 
+# Copies the tape offset backwards and forwards
+#----------------------------------------------------------
+class UndoTapeShift(UndoRecord):
+    def __init__(self, offset):
+        super(UndoTapeShift, self).__init__()
+        self.offset = offset
+        
+    def undo(self):
+        globvars.AllItems['tape'].shift_cells(-self.offset, undoPossible = False)
+    
+    def redo(self):
+        globvars.AllItems['tape'].shift_cells(self.offset, undoPossible = False)
