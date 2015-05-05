@@ -24,7 +24,7 @@ def do_step():
     for t in globvars.AllItems['simState'].transitions:
         if t.startstate == globvars.AllItems['simState']:
             if t.read_value() == readVal:
-                globvars.AllItems['tape'].set_value(globvars.AllItems['simCell'], t.write_value())
+                globvars.AllItems['tape'].set_value(globvars.AllItems['simCell'], t.write_value(), undoPossible = False)
                 globvars.AllItems['simCell'] += t.move_value()
                 globvars.AllItems['tape'].select_cell(globvars.AllItems['simCell'])
                 t.move_along_line()

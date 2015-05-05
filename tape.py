@@ -131,12 +131,13 @@ class Tape(FloatLayout):
         self.exists(location)
         return self.tape[self.zeroposition + location]
         
-    def set_value(self, location, value):
+    def set_value(self, location, value, undoPossible = True):
         self.exists(location)
         if self.tape[self.zeroposition + location] != value:
             oldtape = list(self.tape)
             self.tape[self.zeroposition + location] = value
-            UndoTapeEdit(oldtape, self.zeroposition)
+            if undoPossible:
+                UndoTapeEdit(oldtape, self.zeroposition)
         self.display_tape()
         
     def get_tape(self):
