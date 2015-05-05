@@ -31,7 +31,7 @@ def save_machine(filename):
     
     alphabet.text = globvars.AllItems['alphabet']
     
-    initialtape.text = ''.join(map(str, globvars.AllItems['tape'].get_tape()))
+    initialtape.text = globvars.AllItems['tape'].get_tape_string()
     
     blank.set('char', '_')
     
