@@ -60,4 +60,3 @@ def save_machine(filename):
     indent(root)
     tree = ET.ElementTree(root)
     tree.write(filename)
-    print filename
