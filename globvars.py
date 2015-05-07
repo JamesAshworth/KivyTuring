@@ -1,6 +1,3 @@
-from kivy.clock import Clock
-import string
-
 def create():
     global AllItems
     AllItems = {}
