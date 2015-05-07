@@ -573,7 +573,7 @@ class _StateMachine(FloatLayout):
             return touch.ud['touched'].on_touch_up(touch)
         return True
     
-    def centre_machine(self):
+    def centre_machine(self, instance=False):
         maxx, maxy, minx, miny = -maxint, -maxint, maxint, maxint
         for state in globvars.AllItems['states']:
             maxx = max(maxx, state.center_x)
