@@ -19,9 +19,6 @@ class LeftRightTextInput(LengthConstrainedTextInput):
                 return super(LeftRightTextInput, self).insert_text(s, from_undo = from_undo)
         return super(LeftRightTextInput, self).insert_text("", from_undo=from_undo)
 
-class StateTextInput(LengthConstrainedTextInput):
-    pass
-
 class AlphabetTextInput(LengthConstrainedTextInput):
     def insert_text(self, substring, from_undo=False):
         for s in substring:

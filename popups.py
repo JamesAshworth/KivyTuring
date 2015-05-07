@@ -2,7 +2,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
 from kivy.clock import Clock
 from kivy.uix.label import Label
-from inputs import LeftRightTextInput, AlphabetTextInput, StateTextInput, AlphabetDefinitionTextInput
+from inputs import LeftRightTextInput, AlphabetTextInput, LengthConstrainedTextInput, AlphabetDefinitionTextInput
 from kivy.uix.widget import Widget
 from kivy.uix.button import Button
 import globvars
@@ -65,7 +65,7 @@ class StateNamer(CommonPopup):
         self.message.text = "Please provide a unique name for this state:"
         self.button.text = "Set Name"
         # Create the user input section
-        self.textinput = StateTextInput(width = 80, size_hint = (None, 1), multiline = False, length = 4, text = text)
+        self.textinput = LengthConstrainedTextInput(width = 80, size_hint = (None, 1), multiline = False, length = 4, text = text)
         self.textinput.bind(on_text_validate=self.dismiss)
         # Add this to the correct area
         self.entry.add_widget(self.textinput)
