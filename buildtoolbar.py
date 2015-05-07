@@ -2,10 +2,15 @@ from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from buttons import ExtendButton, StickyButton, SwitchButton, Spacer, UndoButton
 import globvars
+import savemachine
         
 class AlphabetButton(ExtendButton):
     def on_press(self):
         globvars.AllItems['stateMachine'].define_alphabet()
+        
+class SaveButton(ExtendButton):
+    def on_press(self):
+        savemachine.save_machine(auto = False)
         
 class MachineButton(StickyButton):
     def on_press(self):
@@ -28,6 +33,7 @@ class BuildToolbar(BoxLayout):
         self.add_widget(AlphabetButton(background_normal = "./resources/alphabet_button.png", background_down = "./resources/alphabet_button_pressed.png"))
         self.add_widget(Spacer())
         self.add_widget(globvars.AllItems['undoButton'])
+        self.add_widget(SaveButton(background_normal = "./resources/save_button.png", background_down = "./resources/save_button_pressed.png"))
         self.add_widget(globvars.AllItems['redoButton'])
         self.add_widget(Spacer())
         self.add_widget(SwitchButton(mode = "run", text = "Run", direction = "left", newmode = "run", button = None, target = 'toolbar'))
