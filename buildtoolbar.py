@@ -20,6 +20,7 @@ class MachineButton(StickyButton):
 class BuildToolbar(BoxLayout):
     def __init__(self, *args, **kwargs):
         super(BuildToolbar, self).__init__(*args, **kwargs)
+        self.add_widget(SwitchButton(mode = "menu", text = "Menu", direction = "right", newmode = "move", button = 'move', target = 'application'))
         self.add_widget(Spacer())
         globvars.AllItems['move'] = MachineButton(mode = "move", background_normal = "./resources/move_button.png", background_down = "./resources/move_button_pressed.png", selected = True)
         globvars.AllItems['undoButton'] = UndoButton(mode = "undo", text = "Undo")
