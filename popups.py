@@ -2,6 +2,8 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
 from kivy.clock import Clock
 from kivy.uix.label import Label
+from kivy.uix.filechooser import FileChooserListView
+from kivy.uix.textinput import TextInput
 from inputs import LeftRightTextInput, AlphabetTextInput, LengthConstrainedTextInput, AlphabetDefinitionTextInput
 from kivy.uix.widget import Widget
 from kivy.uix.button import Button
@@ -205,3 +207,25 @@ class InfoBox(CommonPopup):
 class ErrorBox(InfoBox):
     def __init__(self, message, *args, **kwargs):
         super(ErrorBox, self).__init__(message=message, title="Error", *args, **kwargs)
+        
+class FileChooser(Popup):
+    def __init__(self, proc, *args, **kwargs):
+        super(FileChooser, self).__init__(*args, **kwargs)
+        self.continuer = proc
+        self.auto_dismiss = False
+        self.title = "Load file"
+        self.content = BoxLayout(orientation = 'vertical')
+        filechooser = FileChooserListView(filters=['*.xml'], filter_dirs=True, path="~")
+        cancel = Button(text = "Cancel")
+        filechooser.bind(selection=self.on_select)
+        cancel.bind(on_press=self.dismiss)
+        buttonholder = BoxLayout(orientation = 'horizontal', size_hint_y = None, height = 30)
+        buttonholder.add_widget(Widget())
+        buttonholder.add_widget(cancel)
+        buttonholder.add_widget(Widget())
+        self.content.add_widget(filechooser)
+        self.content.add_widget(buttonholder)
+        
+    def on_select(self, instance, selection):
+        self.continuer(filename = selection[0])
+        self.dismiss()

@@ -1,44 +1,25 @@
 from statemachine import create_state, create_transition
 from xml.etree.ElementTree import parse as xmlparse
-from kivy.uix.filechooser import FileChooserListView
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.popup import Popup
-from kivy.uix.button import Button
-from kivy.uix.widget import Widget
+from kivy.clock import Clock
 from popups import InfoBox
+import savemachine
 import globvars
 import statefuncs
 import undo
-        
-class FileChooser(Popup):
-    def __init__(self, *args, **kwargs):
-        super(FileChooser, self).__init__(*args, **kwargs)
-        self.auto_dismiss = False
-        self.title = "Load file"
-        self.content = BoxLayout(orientation = 'vertical')
-        filechooser = FileChooserListView(path="~")
-        cancel = Button(text = "Cancel")
-        filechooser.bind(selection=self.on_select)
-        cancel.bind(on_press=self.dismiss)
-        buttonholder = BoxLayout(orientation = 'horizontal', size_hint_y = None, height = 30)
-        buttonholder.add_widget(Widget())
-        buttonholder.add_widget(cancel)
-        buttonholder.add_widget(Widget())
-        self.content.add_widget(filechooser)
-        self.content.add_widget(buttonholder)
-        
-    def on_select(self, instance, selection):
-        globvars.AllItems['undoDisabled'] = True
-        try:
-            load_machine(selection[0])
-            #switch screen
-        except ValueError as err:
-            globvars.AllItems['stateMachine'].clear_machine()
-            InfoBox(title="Load Failed", message=err.args[0]).open()
-        globvars.AllItems['undoDisabled'] = False
-        self.dismiss()
 
 def load_machine(filename):
+    try:
+        _load_machine(filename)
+        globvars.AllItems['application'].transition.direction = 'left'
+        globvars.AllItems['application'].current = 'machine'
+        Clock.schedule_once(globvars.AllItems['stateMachine'].centre_machine)
+        return True
+    except ValueError as err:
+        globvars.AllItems['stateMachine'].clear_machine()
+        InfoBox(title="Load Failed", message=err.args[0]).open()
+        return False
+
+def _load_machine(filename):
     globvars.AllItems['stateMachine'].clear_machine()
     machineSpecs = xmlparse(filename).getroot()
     
@@ -125,9 +106,9 @@ def load_machine(filename):
             raise ValueError('Invalid transition')
             
     undo.clear_undo()
-    globvars.AllItems['stateMachine'].centre_machine()
     globvars.AllItems['move'].on_press()
     globvars.AllItems['saveFile'] = filename.replace('.xml~', '.xml')
+    savemachine.save_machine()
         
 def nextposition():
     machine = globvars.AllItems['stateMachine']
