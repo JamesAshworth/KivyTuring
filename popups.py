@@ -7,6 +7,7 @@ from kivy.uix.textinput import TextInput
 from inputs import LeftRightTextInput, AlphabetTextInput, LengthConstrainedTextInput, AlphabetDefinitionTextInput
 from kivy.uix.widget import Widget
 from kivy.uix.button import Button
+from os.path import isfile
 import globvars
         
 class SpacedContent(BoxLayout):
@@ -229,3 +230,50 @@ class FileChooser(Popup):
     def on_select(self, instance, selection):
         self.continuer(filename = selection[0])
         self.dismiss()
+
+class FileNamer(CommonPopup):
+    def __init__(self, proc, *args, **kwargs):
+        self.continuer = proc
+        # Forward send
+        super(FileNamer, self).__init__(*args, **kwargs)
+        # Set the key info for the user
+        self.title = "New Turing Machine"
+        self.message.text = "Please provide a name for this turing machine:"
+        self.button.text = "Create"
+        # Create the user input section
+        self.entry = TextInput(multiline = False)
+        self.entry.bind(on_text_validate=self.dismiss)
+        # Assemble the popup
+        self.assemble()
+    
+    def post_process(self, instance):
+        if self.entry.text == "":
+            self.feedback.text = "Name cannot be blank"
+            Clock.schedule_once(self.set_focus_text)
+            return True
+        if isfile(self.entry.text + '.xml'):
+            self.feedback.text = "Machine already exists"
+            Clock.schedule_once(self.set_focus_text)
+            return True
+        self.continuer(filename = (self.entry.text + '.xml'))
+        return False
+        
+    def set_focus_text(self, instance):
+        self.entry.focus = True
+
+class FileOverwriter(CommonPopup):
+    def __init__(self, filename, delproc, proc, *args, **kwargs):
+        super(FileOverwriter, self).__init__(*args, **kwargs)
+        self.filename = filename
+        self.deleter = delproc
+        self.continuer = proc
+        self.title = "Overwrite?"
+        self.feedback.text = ("If you continue, you could lose information from %s.\nAre you sure you wish to continue?" % filename.replace('.xml~', ''))
+        self.button.text = "Continue"
+        # Assemble the popup
+        self.content.add_widget(self.feedback)
+        self.content.add_widget(self.buttonholder)
+    
+    def post_process(self, instance):
+        self.deleter(self.filename)
+        self.continuer()

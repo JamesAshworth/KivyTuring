@@ -1,5 +1,11 @@
 #:kivy 1.0.9
 
+<StartLabel>:
+    text_size: self.size
+    font_size: 20 
+    markup: True
+    color: [0, 0, 0, 1]
+
 <Button>:
     width: 60
     size_hint: None, 1
@@ -50,7 +56,7 @@
     width: 50
     size_hint: None, 1
     
-<MenuScreen>:
+<StartScreen>:
     canvas.before:
         Color:
             rgba: 1, 1, 1, 1
