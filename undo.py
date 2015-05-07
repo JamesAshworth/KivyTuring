@@ -36,15 +36,15 @@ class UndoRecord(Widget):
         globvars.AllItems['undo'].append(self)
         globvars.AllItems['undoButton'].disabled = False
         if not globvars.AllItems['undoDisabled']:
-            savemachine.save_machine(globvars.AllItems['saveFile'] + "~")
+            savemachine.save_machine()
         
     def do_undo(self):
         self.undo()
-        savemachine.save_machine(globvars.AllItems['saveFile'] + "~")
+        savemachine.save_machine()
         
     def do_redo(self):
         self.redo()
-        savemachine.save_machine(globvars.AllItems['saveFile'] + "~")
+        savemachine.save_machine()
         
 #----------------------------------------------------------
 # Name: UndoStateName

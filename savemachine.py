@@ -18,8 +18,13 @@ def indent(elem, level=0):
     else:
         if level and (not elem.tail or not elem.tail.strip()):
             elem.tail = i
+            
+def save_machine(auto = True):
+    if not auto:
+        _save_machine(globvars.AllItems['saveFile'])
+    _save_machine(globvars.AllItems['saveFile'] + "~")
 
-def save_machine(filename):
+def _save_machine(filename):
     root = ET.Element('turingmachine')
     
     alphabet = ET.SubElement(root, 'alphabet')
