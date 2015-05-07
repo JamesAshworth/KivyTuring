@@ -30,7 +30,7 @@ class BuildToolbar(BoxLayout):
         self.add_widget(globvars.AllItems['undoButton'])
         self.add_widget(globvars.AllItems['redoButton'])
         self.add_widget(Spacer())
-        self.add_widget(SwitchButton(mode = "run", text = "Run", direction = "left", newmode = "run", button = None))
+        self.add_widget(SwitchButton(mode = "run", text = "Run", direction = "left", newmode = "run", button = None, target = 'toolbar'))
 
 class TuringApp(App):
     def build(self):

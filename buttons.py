@@ -34,19 +34,20 @@ class StickyButton(ModeButton):
             self.background_normal = self.default
         
 class SwitchButton(ModeButton):
-    def __init__(self, direction, newmode, button, *args, **kwargs):
+    def __init__(self, direction, newmode, button, target, *args, **kwargs):
         super(SwitchButton, self).__init__(*args, **kwargs)
         self.direction = direction
         self.newmode = newmode
         self.button = button
+        self.target = target
         
     def on_press(self):
         if not globvars.AllItems['stateMachine'].set_mode(self.newmode):
             return
-        globvars.AllItems['toolbar'].transition.direction = self.direction
-        globvars.AllItems['toolbar'].current = self.mode
+        globvars.AllItems[self.target].transition.direction = self.direction
+        globvars.AllItems[self.target].current = self.mode
         if not (self.button is None):
-            self.button.on_press()
+            globvars.AllItems[self.button].on_press()
             
 class UndoButton(ModeButton):
     def __init__(self, *args, **kwargs):

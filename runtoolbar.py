@@ -71,7 +71,7 @@ class RunToolbar(BoxLayout):
     def __init__(self, *args, **kwargs):
         super(RunToolbar, self).__init__(*args, **kwargs)
         globvars.AllItems['pauseButton'] = PauseButton(text = "Pause")
-        self.add_widget(BuildButton(mode = "build", text = "Build", direction = "right", newmode = "move", button = globvars.AllItems['move']))
+        self.add_widget(BuildButton(mode = "build", text = "Build", direction = "right", newmode = "move", button = 'move', target = 'toolbar'))
         self.add_widget(Spacer())
         self.add_widget(StepButton(text = "Step"))
         self.add_widget(RunButton(text = "Run"))
