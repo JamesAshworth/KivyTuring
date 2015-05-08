@@ -3,7 +3,13 @@ from buildtoolbar import BuildToolbar
 from runtoolbar import RunToolbar
 from kivy.uix.screenmanager import ScreenManager, Screen
 import globvars
-
+        
+#----------------------------------------------------------
+# Name: Toolbar
+# 
+# Entire toolbar subsystem, with screens for the build and
+# run toolbars
+#----------------------------------------------------------
 class Toolbar(ScreenManager):
     def __init__(self, *args, **kwargs):
         super(Toolbar, self).__init__(*args, **kwargs)
@@ -15,6 +21,7 @@ class Toolbar(ScreenManager):
         self.add_widget(screen)
         globvars.AllItems['toolbar'] = self
         
+# DEBUG SECTION
 class TuringApp(App):
     def build(self):
         return Toolbar()
