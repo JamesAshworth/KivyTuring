@@ -143,7 +143,8 @@ class Transition(Widget):
             if self.startstate == self.endstate:
                 self.midpoint.y += 100
         self.startstate.transitions.append(self)
-        self.endstate.transitions.append(self)
+        if self.startstate != self.endstate:
+            self.endstate.transitions.append(self)
         globvars.AllItems['stateMachine'].add_widget(self.midpoint)
         globvars.AllItems['stateMachine'].add_widget(self.info)
         globvars.AllItems['stateMachine'].add_widget(self)
@@ -519,8 +520,8 @@ class _StateMachine(FloatLayout):
         if self.mode == "create_s":
             start = (len(globvars.AllItems['states']) == 0)
             state = create_state(touch.x, touch.y)
-                state.start_state(start)
             if state is not None:
+                state.start_state(start)
                 touch.ud['touched'] = state
                 touch.ud['statePos'] = [state.x, state.y]
                 UndoStateCreate(state)
