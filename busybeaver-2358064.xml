@@ -1,0 +1,32 @@
+<turingmachine>
+  <alphabet>1_</alphabet>
+  <initialtape>*_*</initialtape>
+  <blank char="_" />
+  <initialstate name="A" />
+  <finalstates>
+    <finalstate name="H" />
+  </finalstates>
+  <states>
+    <state name="A" x="300.0" y="370.0">
+      <transition move="L" newstate="B" seensym="_" writesym="1" x="100.0" y="370.0" />
+      <transition move="L" newstate="D" seensym="1" writesym="1" x="500.0" y="370.0" />
+    </state>
+    <state name="B" x="100.0" y="220.0">
+      <transition move="R" newstate="C" seensym="_" writesym="1" x="200.0" y="295.0" />
+      <transition move="R" newstate="E" seensym="1" writesym="_" x="100.0" y="70.0" />
+    </state>
+    <state name="C" x="300.0" y="220.0">
+      <transition move="L" newstate="A" seensym="_" writesym="_" x="300.0" y="295.0" />
+      <transition move="R" newstate="B" seensym="1" writesym="_" x="200.0" y="145.0" />
+    </state>
+    <state name="D" x="500.0" y="220.0">
+      <transition move="L" newstate="E" seensym="_" writesym="1" x="500.0" y="70.0" />
+      <transition move="L" newstate="H" seensym="1" writesym="1" x="600.0" y="220.0" />
+    </state>
+    <state name="E" x="300.0" y="70.0">
+      <transition move="R" newstate="C" seensym="_" writesym="1" x="225.0" y="145.0" />
+      <transition move="L" newstate="C" seensym="1" writesym="1" x="375.0" y="145.0" />
+    </state>
+    <state name="H" x="700.0" y="220.0" />
+  </states>
+</turingmachine>
