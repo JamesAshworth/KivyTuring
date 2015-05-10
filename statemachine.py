@@ -15,6 +15,8 @@ import logic
 from undo import *
 
 def create_state(x, y, name = None):
+    if statefuncs.collide_state(x, y):
+        return None
     state = State(pos = (x - 25, y - 25))
     globvars.AllItems['stateMachine'].add_widget(state)
     globvars.AllItems['states'].append(state)
@@ -517,7 +519,7 @@ class _StateMachine(FloatLayout):
         if self.mode == "create_s":
             start = (len(globvars.AllItems['states']) == 0)
             state = create_state(touch.x, touch.y)
-            state.start_state(start)
+                state.start_state(start)
             if state is not None:
                 touch.ud['touched'] = state
                 touch.ud['statePos'] = [state.x, state.y]
