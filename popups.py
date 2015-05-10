@@ -216,7 +216,7 @@ class FileChooser(Popup):
         self.auto_dismiss = False
         self.title = "Load file"
         self.content = BoxLayout(orientation = 'vertical')
-        filechooser = FileChooserListView(filters=['*.xml'], filter_dirs=True, path="~")
+        filechooser = FileChooserListView(filters=['*.xml'], filter_dirs=True, path="./")
         cancel = Button(text = "Cancel")
         filechooser.bind(selection=self.on_select)
         cancel.bind(on_press=self.dismiss)
