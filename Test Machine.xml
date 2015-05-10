@@ -1,0 +1,20 @@
+<turingmachine>
+  <alphabet>_01</alphabet>
+  <initialtape>*0*001011</initialtape>
+  <blank char="_" />
+  <initialstate name="0" />
+  <finalstates>
+    <finalstate name="1" />
+  </finalstates>
+  <states>
+    <state name="0" x="400.0" y="220.0">
+      <transition move="R" newstate="0" seensym="0" writesym="1" x="276.0" y="219.0" />
+      <transition move="L" newstate="1" seensym="_" writesym="_" x="507.5" y="220.0" />
+      <transition move="R" newstate="0" seensym="1" writesym="1" x="400.0" y="320.0" />
+    </state>
+    <state name="1" x="615.0" y="220.0">
+      <transition move="L" newstate="2" seensym="1" writesym="1" x="589.5" y="162.0" />
+    </state>
+    <state name="2" x="564.0" y="104.0" />
+  </states>
+</turingmachine>
