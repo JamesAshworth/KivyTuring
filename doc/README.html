@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head><style>
+h1, h2, h3, h4 { color: blue }
+p {text-indent: 35px }
+</style></head>
+
+<h1>Turing Machine Simulator App</h1>
+<h2>User Manual</h2>
+
+<h2><a name="Table of Contents"/>Table of Contents:</h2>
+<h3><ul>
+    <li><a href="#Description">Description</a></li>
+    <li><a href="#Authors">Authors</a></li>
+    <li><a href="#Getting Started">Getting Started</a>
+    <ul>
+        <li><a href="#Menu Screen">The Menu Screen</a></li>
+        <li><a href="#Build Screen">The Build Screen</a></li>
+        <li><a href="#Run Screen">The Run Screen</a></li>
+        <li><a href="#Tape">The Tape</a></li>
+    </ul>
+    </li>
+    <li><a href="#Bugs">Bugs / Limitations</a></li>
+</ul></h3>
+
+<h2><a name="Description"/>Description:</h2>
+<p>This application is designed to build and run Turing machines with a bidirectional infinite tape. It has a simple graphical interface allowing you, the user, to create states and transitions controlling the behaviour of the machine, define the start conditions, and set accepting states. It also provides the facility to run the Turing machine on a pre-populated tape, either by stepping through or running the machine to completion.</p>
+
+<h2><a name="Authors"/>Authors:</h2>
+<p>James Ashworth, Colin Maynard</p>
+
+<h2><a name="Getting Started"/>Getting Started:</h2>
+<h3><a name="Menu Screen"/>The Menu Screen</h3>
+<ul>
+    <p>On first launching the application, you will see a menu screen presenting four options:</p>
+    <ul>
+        <li><a href="#New Machine">New Machine</a></li>
+        <li><a href="#Load Machine">Load Machine</a></li>
+        <li><a href="#Import Machine">Import Machine</a></li>
+        <li><a href="#Delete Machine">Delete Machine</a></li>
+        
+        <h4><a name="New Machine"/>Creating a new machine</h3>
+        <p>Pressing 'New Machine' will open a dialog box asking you to name the machine. This name will be used to identify the machine, as well as for naming files associated with saving the machine. Once a valid name has been entered, a blank Turing machine will be created and you will be taken to the Build screen, where you will be asked to define the alphabet (see <a href="#Define Alphabet">'Define Alphabet'</a> under <a href="#Build Screen">'Build Screen'</a>).</p>
+        <h4><a name="Load Machine"/>Loading an existing machine</h3>
+        <p>Pressing 'Load Machine' will open a dialog to choose a file, starting in the application directory. Files must have the xml extension to be picked up by the dialog. When you have picked a file, the application will attempt to load it. Errors will cause the load to fail, and you will be informed of the reason. Once a valid file has been loaded, you will be taken to the Build screen.</p>
+        <h4><a name="Import Machine"/>Importing a machine</h3>
+        <p><span style="font-family: lucida console;">NOT CURRENTLY IMPLEMENTED</span></p>
+        <p>Pressing 'Import Machine' will function in the same manner as 'Load Machine', but instead of opening the chosen file, on a successful load it will be copied to the application directory.</p>
+        <h4><a name="Delete Machine"/>Deleting a machine</h3>
+        <p>Pressing 'Delete Machine' will open a dialog to choose an xml file, starting in the application directory. Choosing the file will delete it, and any associated auto-save files, allowing a new machine to be created with this name.</p>
+    </ul>
+</ul>
+<h3><a name="Build Screen"/>The Build Screen</h3>
+<img src='./buildtoolbar.png'/>
+<ul>
+    <h4><a name="Menu Button"/>Returning to the Main Menu</h4>
+    <p>Pressing the 'Menu' button will return you to the <a href="#Menu Screen">'Menu Screen'</a>. In addition to the four options already listed, there will now be a button in the top right-hand corner allowing you to reopen the last machine that you were editing.</p>
+    <h4><a name="Move Button"/>Moving</h4>
+    <p>This is the default mode when opening the Build screen. While in 'Move' mode, there are two modes of behaviour:</p>
+    <ul>
+        <li><a href="#Canvas-Pan">Panning</a></li>
+        <li><a href="#Canvas-Center">Centering</a></li>
+        
+        <h5><a name="Canvas-Pan"/>Panning</h5>
+        <p>Pressing and dragging the background will move the entire Turing Machine on the canvas. No changes will be made other than position.</p>
+        <h5><a name="Canvas-Centering"/>Centering</h5>
+        <p>Double-tapping on the background will center the entire Turing machine on the canvas. No changes will be made other than position.</p>
+    </ul>
+    <h4><a name="State Button"/>States</h4>
+    <p>While in 'State' mode, there are three modes of behaviour:</p>
+    <ul>
+        <li><a href="#State-Creation">Creation</a></li>
+        <li><a href="#State-Movement">Movement</a></li>
+        <li><a href="#State-Modification">Modification</a></li>
+        
+        <h5><a name="State-Creation"/>Creation</h5>
+        <p>Pressing a suitable blank spot on the canvas will create a new state. A spot is suitable if a state could be created centered there without colliding with an existing state. The state will be given an automatic name (the lowest number, starting from 0, not already allocated). If the state is the only / first state, it will be set as the start state for the machine.</p>
+        <h5><a name="State-Movement"/>Movement</h5>
+        <p>Pressing and dragging on an existing state will move it around the canvas. A state will follow the touch unless that would cause collision with another state, in which case it will hold position until the touch enters a new valid position.</p>
+        <h5><a name="State-Modification"/>Modification</h5>
+        <p>Double-tapping on a state will open a dialog allowing you to rename the state. State names are limited to four characters for display reasons, and must be unique. Cancelling the dialog will not cause a change.</p>
+    </ul>
+    <h4><a name="Transition Button"/>Transitions</h4>
+    <p>While in 'Transition' mode, there are three modes of behaviour:</p>
+    <ul>
+        <li><a href="#Transition-Creation">Creation</a></li>
+        <li><a href="#Transition-Movement">Movement</a></li>
+        <li><a href="#Transition-Modification">Modification</a></li>
+        
+        <h5><a name="Transition-Creation"/>Creation</h5>
+        <p>Pressing and dragging on an existing state will create a new transition. The end of the transition will follow the touch until the touch is released. If the touch is released over the canvas the transition will be removed. If the touch is released over any state (including the initial state), a transition will be created. A dialog box will then be opened to define the transition. Cancelling this dialog will remove the transition.</p>
+        <h5><a name="Transition-Movement"/>Movement</h5>
+        <p>Existing transitions have green 'grabbers' associated with them. Pressing and dragging the grabber will alter the shape of the transition.</p>
+        <h5><a name="Transition-Movement"/>Modification</h5>
+        <p>Double-tapping on a grabber will open a dialog allowing you to redefine the transition. Transitions must be unique (any state can have a maximum of one transition for each symbol in the alphabet being read). Cancelling the dialog will not cause a change.</p>
+    </ul>
+    <h4><a name="Delete Button"/>Deletion</h4>
+    <p>While in 'Delete' mode, pressing an element (either a state or a transition grabber) will remove that element (and dependent elements) from the Turing machine. Removing a state, for instance, will remove all transitions entering or leaving that state.</p>
+    <h4><a name="Start State Button"/>Start State</h4>
+    <p>While in 'Start State' mode, pressing a state will set it as the initial state for simulation. There must always be exactly one start state in a machine, so it cannot be unset, only reallocated.</p>
+    <h4><a name="Final State Button"/>Final States</h4>
+    <p>While in 'Final State' mode, pressing a state will toggle its acceptance state for simulation. There can be zero or more accepting states in a machine, so pressing a state again will toggle its acceptance once again.</p>
+    <h4><a name="Define Alphabet"/>Define Alphabet</h4>
+    <p>Pressing the 'Define Alphabet' button will open a dialog allowing the user to modify the alphabet of the Turing machine. The alphabet is restricted to alphanumeric characters, and the blank character ('_').</p>
+    <h4><a name="Undo Button"/>Undo</h4>
+    <p>Pressing the 'Undo' button will reverse the most recent change to the Turing machine. This includes: state creation, movement, modification, acceptance toggling, and deletion; transition creation, movement, modification, and deletion; and tape modification and shifting.</p>
+    <h4><a name="Save"/>Save</h4>
+    <p>Pressing the 'Save' button will commit the current autosave file (filename.xml~) to overwrite the existing file. Until this point, all changes are saved separately, and the original file can be reloaded.</p>
+    <h4><a name="Redo Button"/>Redo</h4>
+    <p>Pressing the 'Redo' button will redo the most recent undone change, assuming that no changes have been made in the interim.</p>
+    <h4><a name="Run Screen Button"/>Moving to Simulation</h4>
+    <p>Pressing the 'Run' button will move to the <a href="#Run Screen">'Run Screen'</a>, assuming that there is a minimum of one state. The canvas will be centered on the start state.</p>
+</ul>
+<h3><a name="Run Screen"/>The Run Screen</h3>
+<img src='./runtoolbar.png'/>
+<ul>
+    <h4><a name="Build Screen Button"/>Moving to Build</h4>
+    <p>Pressing the 'Build' button will end the simulation, reset the tape, and move to the <a href="#Build Screen">'Build Screen'</a>.</p>
+    <h4><a name="Step Button"/>Stepping</h4>
+    <p>Pressing the 'Step' button will cause the simulation to advance by one transition. It will also end the effects of the <a href="#Run Button">'Run Button'</a>.</p>
+    <h4><a name="Run Button"/>Running</h4>
+    <p>Pressing the 'Run' button causes the system to automatically advance to the next transition as soon as the previous transition completes (similar to pressing the <a href="#Step Button">'Step Button'</a> repeatedly).</p>
+    <h4><a name="Pause Button"/>Pausing</h4>
+    <p>Pressing the 'Pause' button will end the effects of the <a href="#Run Button">'Run Button'</a>.</p>
+    <h4><a name="Reset Button"/>Resetting</h4>
+    <p>Pressing the 'Reset' button will immediately end the current transition, reset the tape to its initial value, and re-center the canvas on the start state.</p>
+    <h4><a name="Finish Button"/>Running to Finish</h4>
+    <p>Pressing the 'Run to Finish' button will start a new thread to simulate the Turing machine without graphical involvement. A progress bar will show the number of steps taken and allow the user to cancel. When the simulation finishes, the results will be displayed on screen.</p>
+    <h4><a name="Speed Slider"/>Changing Speed</h4>
+    <p>Adjusting the 'Speed Slider' will change the speed of animation for graphical simulation. At the lowest speed, the system will run at a maximum of one transition per second. At the highest, that increases to ten transitions per second.</p>
+</ul>
+<h3><a name="Tape"/>The Tape</h3>
+<img src='./tape.png'/>
+<ul>
+    <h4><a name="Reset Position"/>Reset Tape Position</h4>
+    <p>Pressing the 'Reset Tape Position' button will scroll the tape until cell zero is in the default position (left for the <a href="#Build Screen">'Build Screen'</a>, center for the <a href="#Run Screen">'Run Screen'</a>).</p>
+    <h4><a name="Shift Left"/>Shift Left</h4>
+    <p>Pressing the 'Shift Left' button will move each cell on the tape, so that the value at cell one is now in cell zero, two is in one, etc. This is useful for machines that have been loaded with a bidirectional tape but no offset.</p>
+    <h4><a name="Shift Right"/>Shift Right</h4>
+    <p>Behaves as the <a href="#Shift Left">'Shift Left'</a> button, but in the opposite direction.</p>
+</ul>
+
+<h2><a name="Bugs"/>Known Bugs / Limitations:</h2>
+<ul>
+    <li>Import Machine not currently implemented</li>
+    <li>Not currently available on Pendo Pad</li>
+</ul>
+
+<p><a href="#Table of Contents">Back to Top</a></p>
+</html>
