@@ -443,13 +443,14 @@ class State(Widget):
         self.final_state(self.final)
         
     def set_start_state(self, undoPossible = False, oldState = None):
-        if not self.start:
-            if undoPossible:
-                if oldState == None:
-                    oldState = statefuncs.find_start_state()
-                UndoStateStart(oldState, self)
+        if oldState == None:
+            oldState = statefuncs.find_start_state()
+        hold = self.start
         statefuncs.remove_start_state()
         self.start_state(True)
+        if not hold:
+            if undoPossible:
+                UndoStateStart(oldState, self)
         
     def distance_centre(self, x, y):
         dx = self.center_x - x
