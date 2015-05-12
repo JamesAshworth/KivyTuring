@@ -309,7 +309,8 @@ class Transition(Widget):
         
     def destroy_self(self):
         self.startstate.transitions.remove(self)
-        self.endstate.transitions.remove(self)
+        if self.startstate != self.endstate:
+            self.endstate.transitions.remove(self)
         globvars.AllItems['stateMachine'].remove_widget(self.midpoint)
         globvars.AllItems['stateMachine'].remove_widget(self.info)
         globvars.AllItems['stateMachine'].remove_widget(self)
