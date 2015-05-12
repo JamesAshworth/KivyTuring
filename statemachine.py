@@ -419,9 +419,9 @@ class State(Widget):
         self.label.text = text
         
     def final_state_toggle(self, undoPossible = False):
+        self.final_state(not self.final)
         if undoPossible:
             UndoStateFinal(self)
-        self.final_state(not self.final)
         
     def final_state(self, final):
         self.final = final
