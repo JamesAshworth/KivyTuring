@@ -46,4 +46,5 @@ Hitting run to finish while running causes the app to crash. This is the case on
 
 Changes made to get it running:
 Added "__version__ = '1.8'" to main.py
+Changed the path in the buildozer.spec file to be an explicit path
 entered "sudo easy_install markupsafe" in the virtual machine terminal
