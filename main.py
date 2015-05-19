@@ -1,3 +1,5 @@
+__version__ = '1.8'
+
 from kivy.app import App
 from startscreen import StartScreen
 from machinescreen import MachineScreen
