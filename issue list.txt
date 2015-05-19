@@ -1,0 +1,49 @@
+1)
+In small popups the keyboard covers most of the textbox so the user cannot see what they are typing,
+	or see the buttons.
+
+2)
+Popups could be larger perhaps, and the buttons on them are quite small. It's workable as is though.
+
+3)
+Keyboard covers the tape when editing it. I'm not certain what we could/should do about that if anything
+
+*4)
+The build toolbar images don't load. The buttons work but the images don't appear
+RESOLVED. The Resources folder had a capital in it and the image paths don't. This wasn't an issue in PC testing but
+	was an issue on the pendo pad. renaming the resources folder to be lower case solved the issue. 
+
+5)
+One instance of the progress window remaining after completion when running to finish. This was the first use of it. Since then it has worked fine
+
+6)
+Reopen option isn't working. I think it is simply outside the scree: I can see a line that I think is the tail of the p
+
+7)
+Delete machine popup says Load file, could maybe do with a confirmation popup too
+
+8) 
+It'd be good to have some kinda save notification.
+
+9)
+The main menu needs to be bigger. Tapping the right button is far more painful than it should be
+
+10)
+We probably don't want the Resources, doc, include and lib folders visible when loading and deleting
+
+11)
+All the buttons in the build and run toolbars have a very thin (1px?) white line above them
+
+12)
+Movement folling path when running is quite jerky. Especially at slow speeds
+
+13)
+Why does the machine completion text have a cancel button? It seems pointless.
+
+14)
+Hitting run to finish while running causes the app to crash. This is the case on PC as well as android.
+
+
+Changes made to get it running:
+Added "__version__ = '1.8'" to main.py
+entered "sudo easy_install markupsafe" in the virtual machine terminal
