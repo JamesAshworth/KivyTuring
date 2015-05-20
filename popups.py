@@ -27,11 +27,11 @@ class CommonPopup(Popup):
         super(CommonPopup, self).__init__(*args, **kwargs)
         self.auto_dismiss = False
         self.content = BoxLayout(orientation = 'vertical')
-        self.message = Label(height = 60, size_hint = (1, None))
-        self.entry = SpacedContent(height = 60, size_hint = (1, None))
-        self.feedback = Label(height = 60, size_hint = (1, None), valign = 'top', halign = 'center')
+        self.message = Label(height = 120, size_hint = (1, None))
+        self.entry = SpacedContent(height = 120, size_hint = (1, None))
+        self.feedback = Label(height = 120, size_hint = (1, None), valign = 'top', halign = 'center')
         self.feedback.bind(size = self.feedback.setter('text_size')) 
-        self.buttonholder = SpacedContent(height = 60, size_hint = (1, None))
+        self.buttonholder = SpacedContent(height = 120, size_hint = (1, None))
         self.button = Button()
         self.cancel = Button(text = "Cancel")
         self.buttonholder.add_widget(self.button)
@@ -68,7 +68,7 @@ class StateNamer(CommonPopup):
         self.message.text = "Please provide a unique name for this state:"
         self.button.text = "Set Name"
         # Create the user input section
-        self.textinput = LengthConstrainedTextInput(width = 80, size_hint = (None, 1), multiline = False, length = 4, text = text)
+        self.textinput = LengthConstrainedTextInput(width = 160, size_hint = (None, 1), multiline = False, length = 4, text = text)
         self.textinput.bind(on_text_validate=self.dismiss)
         # Add this to the correct area
         self.entry.add_widget(self.textinput)
@@ -106,17 +106,17 @@ class TransitionIdentifier(CommonPopup):
         self.message.text = "Please provide read/write/movement info for this transition:"
         self.button.text = "Set Info"
         # Create the user input section
-        self.textread = AlphabetTextInput(width = 30, size_hint = (None, 1), multiline = False, text = read)
-        self.textwrite = AlphabetTextInput(width = 30, size_hint = (None, 1), multiline = False, text = write)
-        self.textmove = LeftRightTextInput(width = 30, size_hint = (None, 1), multiline = False, text = move)
+        self.textread = AlphabetTextInput(width = 60, size_hint = (None, 1), multiline = False, text = read)
+        self.textwrite = AlphabetTextInput(width = 60, size_hint = (None, 1), multiline = False, text = write)
+        self.textmove = LeftRightTextInput(width = 60, size_hint = (None, 1), multiline = False, text = move)
         self.textread.bind(on_text_validate=self.set_focus_text2)
         self.textwrite.bind(on_text_validate=self.set_focus_text3)
         self.textmove.bind(on_text_validate=self.dismiss)
         # Add this to the correct area
         self.entry.add_widget(self.textread)
-        self.entry.add_widget(Label(width = 10, size_hint = (None, 1), text = "/"))
+        self.entry.add_widget(Label(width = 20, size_hint = (None, 1), text = "/"))
         self.entry.add_widget(self.textwrite)
-        self.entry.add_widget(Label(width = 10, size_hint = (None, 1), text = "/"))
+        self.entry.add_widget(Label(width = 20, size_hint = (None, 1), text = "/"))
         self.entry.add_widget(self.textmove)
         # Set the parent
         self.object = object
@@ -167,7 +167,7 @@ class AlphabetEntry(CommonPopup):
         self.message.text = "Please define the alphabet for this machine:"
         self.button.text = "Define"
         # Create the user input section
-        self.entry.height = 60
+        self.entry.height = 120
         input = AlphabetDefinitionTextInput(feedback = self.feedback, text = globvars.AllItems['alphabet'], multiline = False)
         input.bind(on_text_validate=self.dismiss)
         # Add this to the correct area
