@@ -1,4 +1,5 @@
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.stacklayout import StackLayout
 from kivy.uix.popup import Popup
 from kivy.clock import Clock
 from kivy.uix.label import Label
@@ -26,12 +27,12 @@ class CommonPopup(Popup):
     def __init__(self, *args, **kwargs):
         super(CommonPopup, self).__init__(*args, **kwargs)
         self.auto_dismiss = False
-        self.content = BoxLayout(orientation = 'vertical')
-        self.message = Label(height = 120, size_hint = (1, None))
-        self.entry = SpacedContent(height = 120, size_hint = (1, None))
-        self.feedback = Label(height = 120, size_hint = (1, None), valign = 'top', halign = 'center')
+        self.content = StackLayout(orientation = 'tb-lr')
+        self.message = Label(size_hint = (1, None))
+        self.entry = SpacedContent(size_hint = (1, None))
+        self.feedback = Label(size_hint = (1, None), valign = 'top', halign = 'center')
         self.feedback.bind(size = self.feedback.setter('text_size')) 
-        self.buttonholder = SpacedContent(height = 120, size_hint = (1, None))
+        self.buttonholder = SpacedContent(size_hint = (1, None))
         self.button = Button()
         self.cancel = Button(text = "Cancel")
         self.buttonholder.add_widget(self.button)
@@ -43,7 +44,6 @@ class CommonPopup(Popup):
         self.content.add_widget(self.entry)
         self.content.add_widget(self.feedback)
         self.content.add_widget(self.buttonholder)
-        self.content.add_widget(Widget())
         
     def on_cancel(self, instance):
         self.unbind(on_dismiss=self.post_process)
@@ -201,23 +201,18 @@ class ErrorBox(InfoBox):
     def __init__(self, message, *args, **kwargs):
         super(ErrorBox, self).__init__(message=message, title="Error", *args, **kwargs)
         
-class FileChooser(Popup):
+class FileChooser(CommonPopup):
     def __init__(self, proc, *args, **kwargs):
         super(FileChooser, self).__init__(*args, **kwargs)
         self.continuer = proc
         self.auto_dismiss = False
         self.title = "Choose file"
-        self.content = BoxLayout(orientation = 'vertical')
         filechooser = FileChooserListView(filters=['*.xml'], filter_dirs=True, path="./")
-        cancel = Button(text = "Cancel")
         filechooser.bind(selection=self.on_select)
-        cancel.bind(on_press=self.dismiss)
-        buttonholder = BoxLayout(orientation = 'horizontal', size_hint_y = None, height = 30)
-        buttonholder.add_widget(Widget())
-        buttonholder.add_widget(cancel)
-        buttonholder.add_widget(Widget())
-        self.content.add_widget(filechooser)
-        self.content.add_widget(buttonholder)
+        self.entry.add_widget(filechooser)
+        self.buttonholder.remove_widget(self.button)
+        self.content.remove_widget(self.message)
+        self.content.remove_widget(self.feedback)
         
     def on_select(self, instance, selection):
         self.continuer(filename = selection[0])
