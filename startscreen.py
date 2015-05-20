@@ -1,62 +1,81 @@
 from kivy.app import App
 from kivy.uix.label import Label
 from kivy.uix.widget import Widget
+from kivy.uix.button import Button
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.anchorlayout import AnchorLayout
 from glob import glob
 import globvars
 import fileops
-
-class StartLabel(Label):
-    pass
         
-class LoadLabel(StartLabel):
+class ControlLabel(Button):
+    def __init__(self, text, *args, **kwargs):
+        super(ControlLabel, self).__init__(text="[color=#000000]" + text + "[/color]", *args, **kwargs)
+        self.markup = True
+        self.background_normal = ""
+        self.background_down = ""
+        self.background_disabled_normal = ""
+        
+class NewMachineLabel(ControlLabel):
     def __init__(self, *args, **kwargs):
-        super(LoadLabel, self).__init__(*args, **kwargs)
-        self.size_hint = (1, None)
-        self.height = 80
-        self.halign = 'right'
-        self.valign = 'top'
-        self.padding = (-20, -20)
+        super(NewMachineLabel, self).__init__(text="New Machine", *args, **kwargs)
+        
+    def on_press(self):
+        fileops.new_file(overwrite = False)
+        
+class LoadMachineLabel(ControlLabel):
+    def __init__(self, *args, **kwargs):
+        super(LoadMachineLabel, self).__init__(text="Load Machine", *args, **kwargs)
+      
+    def on_press(self):
+        fileops.load_file(overwrite = False)
+        
+class ImportMachineLabel(ControlLabel):
+    def __init__(self, *args, **kwargs):
+        super(ImportMachineLabel, self).__init__(text="Import Machine", *args, **kwargs)
+      
+    def on_press(self):
+        fileops.import_file(overwrite = False)
+        
+class DeleteMachineLabel(ControlLabel):
+    def __init__(self, *args, **kwargs):
+        super(DeleteMachineLabel, self).__init__(text="Delete Machine", *args, **kwargs)
+      
+    def on_press(self):
+        fileops.delete_file()
+        
+class ReloadMachineLabel(ControlLabel):
+    def __init__(self, *args, **kwargs):
+        super(ReloadMachineLabel, self).__init__(text="", *args, **kwargs)
+        self.set_text("");
         
     def set_text(self, text):
         if text == '':
             self.text = ''
+            self.disabled = True
         else:
-            self.text = '[ref=' + text + '.xml~]Reopen: ' + text + '[/ref]'
+            self.text = '[color=#000000]Reopen: ' + text + '[/color]'
+            self.instance = text + '.xml~'
+            self.disabled = False
         
-    def on_ref_press(self, instance):
-        fileops.load_file(filename = instance)
-        
-class ControlLabel(StartLabel):
-    def __init__(self, *args, **kwargs):
-        super(ControlLabel, self).__init__(*args, **kwargs)
-        self.size_hint = (None, None)
-        self.height = 170
-        self.width = 190
-        
-    def on_ref_press(self, ref):
-        if ref == 'new':
-            fileops.new_file(overwrite = False)
-        if ref == 'load':
-            fileops.load_file(overwrite = False)
-        if ref == 'import':
-            fileops.import_file(overwrite = False)
-        if ref == 'delete':
-            fileops.delete_file()
+    def on_press(self):
+        fileops.load_file(filename = self.instance)
         
 class StartScreen(GridLayout):
     def __init__(self, *args, **kwargs):
         super(StartScreen, self).__init__(*args, **kwargs)
         self.rows = 3
-        self.loadlabel = LoadLabel()
+        self.loadlabel = ReloadMachineLabel()
         self.topRow = AnchorLayout(anchor_x='right', anchor_y='top')
-        self.middleRow = AnchorLayout(anchor_x='center', anchor_y='center')
+        self.middleRow = GridLayout(rows=4)
         self.add_widget(self.topRow)
         self.add_widget(self.middleRow)
         self.add_widget(Widget())
         self.topRow.add_widget(self.loadlabel)
-        self.middleRow.add_widget(ControlLabel(text = '[ref=new]New Machine[/ref]\n\n[ref=load]Load Machine[/ref]\n\n[ref=import]Import Machine[/ref]\n\n[ref=delete]Delete Machine[/ref]'))
+        self.middleRow.add_widget(NewMachineLabel())
+        self.middleRow.add_widget(LoadMachineLabel())
+        self.middleRow.add_widget(ImportMachineLabel())
+        self.middleRow.add_widget(DeleteMachineLabel())
         self.load_label()
         globvars.AllItems['refreshLabel'] = self.load_label
         globvars.AllItems['refreshLabel']()
