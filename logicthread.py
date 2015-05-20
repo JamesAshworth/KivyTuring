@@ -10,10 +10,10 @@ class ProgressPopup(CommonPopup):
         super(ProgressPopup, self).__init__(*args, **kwargs)
         self.thread = thread
         self.progress = ProgressBar(max = max)
-        self.content.add_widget(self.progress)
-        self.content.add_widget(self.message)
-        if cancel:
-            self.content.add_widget(self.buttonholder)
+        self.content.remove_widget(self.message)
+        self.entry.add_widget(self.progress)
+        if not cancel:
+            self.content.remove_widget(self.buttonholder)
         self.buttonholder.remove_widget(self.button)
         
     def on_cancel(self, instance):
@@ -71,7 +71,7 @@ class LogicThread(Thread):
         self.steps += 1
         if not (self.steps % 1000):
             self.progress.progress.value = (self.progress.progress.value + 1) % 100
-            self.progress.message.text = str(self.steps)
+            self.progress.feedback.text = str(self.steps)
         try:
             self.tape[self.position] = self.states[self.state][self.symbol]['wr']
             self.position += self.states[self.state][self.symbol]['mv']

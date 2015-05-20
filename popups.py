@@ -13,8 +13,8 @@ import globvars
 class SpacedContent(BoxLayout):
     def __init__(self, *args, **kwargs):
         super(SpacedContent, self).__init__(*args, **kwargs)
-        super(SpacedContent, self).add_widget(Widget())
-        self.lastwidget = Widget()
+        super(SpacedContent, self).add_widget(Widget(size_hint = (0.01, 1)))
+        self.lastwidget = Widget(size_hint = (0.01, 1))
         super(SpacedContent, self).add_widget(self.lastwidget)
         
     def add_widget(self, *args, **kwargs):
@@ -27,11 +27,11 @@ class CommonPopup(Popup):
         super(CommonPopup, self).__init__(*args, **kwargs)
         self.auto_dismiss = False
         self.content = BoxLayout(orientation = 'vertical')
-        self.message = Label(height = 30, size_hint = (1, None))
-        self.entry = SpacedContent()
-        self.feedback = Label(valign = 'middle', halign = 'center')
+        self.message = Label(height = 60, size_hint = (1, None))
+        self.entry = SpacedContent(height = 60, size_hint = (1, None))
+        self.feedback = Label(height = 60, size_hint = (1, None), valign = 'top', halign = 'center')
         self.feedback.bind(size = self.feedback.setter('text_size')) 
-        self.buttonholder = SpacedContent()
+        self.buttonholder = SpacedContent(height = 60, size_hint = (1, None))
         self.button = Button()
         self.cancel = Button(text = "Cancel")
         self.buttonholder.add_widget(self.button)
@@ -39,16 +39,15 @@ class CommonPopup(Popup):
         self.button.bind(on_press=self.dismiss)
         self.cancel.bind(on_press=self.on_cancel)
         self.bind(on_dismiss=self.post_process)
-        
-    def on_cancel(self, instance):
-        self.unbind(on_dismiss=self.post_process)
-        self.dismiss()
-        
-    def assemble(self):
         self.content.add_widget(self.message)
         self.content.add_widget(self.entry)
         self.content.add_widget(self.feedback)
         self.content.add_widget(self.buttonholder)
+        self.content.add_widget(Widget())
+        
+    def on_cancel(self, instance):
+        self.unbind(on_dismiss=self.post_process)
+        self.dismiss()
         
     def open(self, *args, **kwargs):
         super(CommonPopup, self).open(*args, **kwargs)
@@ -73,9 +72,8 @@ class StateNamer(CommonPopup):
         self.textinput.bind(on_text_validate=self.dismiss)
         # Add this to the correct area
         self.entry.add_widget(self.textinput)
-        # Set the parent and assemble the popup
+        # Set the parent
         self.object = object
-        self.assemble()
         
     def open(self):
         super(StateNamer, self).open()
@@ -120,9 +118,8 @@ class TransitionIdentifier(CommonPopup):
         self.entry.add_widget(self.textwrite)
         self.entry.add_widget(Label(width = 10, size_hint = (None, 1), text = "/"))
         self.entry.add_widget(self.textmove)
-        # Set the parent and assemble the popup
+        # Set the parent
         self.object = object
-        self.assemble()
         
     def open(self):
         super(TransitionIdentifier, self).open()
@@ -170,11 +167,11 @@ class AlphabetEntry(CommonPopup):
         self.message.text = "Please define the alphabet for this machine:"
         self.button.text = "Define"
         # Create the user input section
+        self.entry.height = 60
+        input = AlphabetDefinitionTextInput(feedback = self.feedback, text = globvars.AllItems['alphabet'], multiline = False)
+        input.bind(on_text_validate=self.dismiss)
         # Add this to the correct area
-        self.entry = AlphabetDefinitionTextInput(feedback = self.feedback, text = globvars.AllItems['alphabet'], multiline = False)
-        self.entry.bind(on_text_validate=self.dismiss)
-        # Set the parent and assemble the popup
-        self.assemble()
+        self.entry.add_widget(input)
         
     def set_focus_text(self, instance):
         self.entry.focus = True
@@ -196,14 +193,9 @@ class InfoBox(CommonPopup):
         self.title = title
         self.message.text = message
         self.button.text = "Ok"
-        # Create the user input section
-        # Add this to the correct area
-        # Set the parent and assemble the popup
-        self.assemble()
-        
-    def assemble(self):
-        self.content.add_widget(self.message)
-        self.content.add_widget(self.buttonholder)
+        self.buttonholder.remove_widget(self.cancel)
+        self.content.remove_widget(self.entry)
+        self.content.remove_widget(self.feedback)
         
 class ErrorBox(InfoBox):
     def __init__(self, message, *args, **kwargs):
@@ -241,10 +233,10 @@ class FileNamer(CommonPopup):
         self.message.text = "Please provide a name for this turing machine:"
         self.button.text = "Create"
         # Create the user input section
-        self.entry = TextInput(multiline = False)
-        self.entry.bind(on_text_validate=self.dismiss)
+        input = TextInput(multiline = False)
+        input.bind(on_text_validate=self.dismiss)
+        self.entry.add_widget(input)
         # Assemble the popup
-        self.assemble()
     
     def post_process(self, instance):
         if self.entry.text == "":
