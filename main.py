@@ -20,6 +20,9 @@ class Application(ScreenManager):
         globvars.AllItems['application'] = self
         
 class TuringApp(App):
+    def open_settings(self, *largs):
+        pass
+        
     def build(self):
         return Application()
 
