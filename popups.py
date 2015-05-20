@@ -214,7 +214,7 @@ class FileChooser(Popup):
         super(FileChooser, self).__init__(*args, **kwargs)
         self.continuer = proc
         self.auto_dismiss = False
-        self.title = "Load file"
+        self.title = "Choose file"
         self.content = BoxLayout(orientation = 'vertical')
         #filechooser = FileChooserListView(filters=['*.xml'], filter_dirs=True, path="./")
         filechooser = FileChooserListView(filters=['*.xml'], path="./")
