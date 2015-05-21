@@ -20,6 +20,11 @@ class Toolbar(ScreenManager):
         screen.add_widget(RunToolbar())
         self.add_widget(screen)
         globvars.AllItems['toolbar'] = self
+        self.size_hint = (1, None)
+        globvars.AllItems['application'].bind(width=self.set_height)
+        
+    def set_height(self, instance, width):
+        self.height = width / 15
         
 # DEBUG SECTION
 class TuringApp(App):

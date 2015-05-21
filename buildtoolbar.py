@@ -1,6 +1,6 @@
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
-from buttons import ExtendButton, StickyButton, SwitchButton, Spacer, UndoButton
+from buttons import ToolbarButton, StickyButton, SwitchButton, Spacer, UndoButton
 import globvars
 import savemachine
         
@@ -9,7 +9,7 @@ import savemachine
 # 
 # Button to define the alphabet on the current machine
 #----------------------------------------------------------
-class AlphabetButton(ExtendButton):
+class AlphabetButton(ToolbarButton):
     def on_press(self):
         globvars.AllItems['stateMachine'].define_alphabet()
         
@@ -19,7 +19,7 @@ class AlphabetButton(ExtendButton):
 # Button to explicitly save the current machine (ie .xml 
 # not .xml~)
 #----------------------------------------------------------
-class SaveButton(ExtendButton):
+class SaveButton(ToolbarButton):
     def on_press(self):
         savemachine.save_machine(auto = False)
         

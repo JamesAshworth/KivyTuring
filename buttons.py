@@ -13,11 +13,20 @@ class Spacer(Widget):
         pass
         
 #----------------------------------------------------------
-# Name: ExtendButton
+# Name: ToolbarButton
 # 
 # Button with the selected proc, to build from
 #----------------------------------------------------------
-class ExtendButton(Button):
+class ToolbarButton(Button):
+    def __init__(self, *args, **kwargs):
+        super(ToolbarButton, self).__init__(*args, **kwargs)
+        self.size_hint = (None, 1)
+        globvars.AllItems['application'].bind(width=self.set_width)
+        
+    def set_width(self, instance, width):
+        self.width = width / 15
+        self.font_size = width / 90
+        
     def selected(self, selected):
         pass
         
@@ -27,7 +36,7 @@ class ExtendButton(Button):
 # Button which has a mode, for buttons which might want 
 # some sort of mode
 #----------------------------------------------------------
-class ModeButton(ExtendButton):
+class ModeButton(ToolbarButton):
     def __init__(self, mode = None, *args, **kwargs):
         super(ModeButton, self).__init__(*args, **kwargs)
         self.mode = mode

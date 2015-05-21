@@ -168,21 +168,21 @@ class AlphabetEntry(CommonPopup):
         self.button.text = "Define"
         # Create the user input section
         self.entry.height = 120
-        input = AlphabetDefinitionTextInput(feedback = self.feedback, text = globvars.AllItems['alphabet'], multiline = False)
-        input.bind(on_text_validate=self.dismiss)
+        self.input = AlphabetDefinitionTextInput(feedback = self.feedback, text = globvars.AllItems['alphabet'], multiline = False)
+        self.input.bind(on_text_validate=self.dismiss)
         # Add this to the correct area
-        self.entry.add_widget(input)
+        self.entry.add_widget(self.input)
         
     def set_focus_text(self, instance):
-        self.entry.focus = True
+        self.input.focus = True
         
     def post_process(self, instance):
-        if self.entry.text == "":
+        if self.input.text == "":
             self.feedback.text = "Alphabet cannot be empty"
             return True
-        if "_" not in self.entry.text:
-            self.entry.text = "_" + self.entry.text
-        globvars.AllItems['alphabet'] = self.entry.text
+        if "_" not in self.input.text:
+            self.input.text = "_" + self.input.text
+        globvars.AllItems['alphabet'] = self.input.text
         return False
         
 class InfoBox(CommonPopup):
@@ -228,25 +228,25 @@ class FileNamer(CommonPopup):
         self.message.text = "Please provide a name for this turing machine:"
         self.button.text = "Create"
         # Create the user input section
-        input = TextInput(multiline = False)
-        input.bind(on_text_validate=self.dismiss)
-        self.entry.add_widget(input)
+        self.input = TextInput(multiline = False)
+        self.input.bind(on_text_validate=self.dismiss)
+        self.entry.add_widget(self.input)
         # Assemble the popup
     
     def post_process(self, instance):
-        if self.entry.text == "":
+        if self.input.text == "":
             self.feedback.text = "Name cannot be blank"
             Clock.schedule_once(self.set_focus_text)
             return True
-        if isfile(self.entry.text + '.xml'):
+        if isfile(self.input.text + '.xml'):
             self.feedback.text = "Machine already exists"
             Clock.schedule_once(self.set_focus_text)
             return True
-        self.continuer(filename = (self.entry.text + '.xml'))
+        self.continuer(filename = (self.input.text + '.xml'))
         return False
         
     def set_focus_text(self, instance):
-        self.entry.focus = True
+        self.input.focus = True
 
 class FileOverwriter(CommonPopup):
     def __init__(self, filename, delproc, proc, *args, **kwargs):

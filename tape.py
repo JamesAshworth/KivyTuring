@@ -31,13 +31,30 @@ class TapeLabel(Label):
         return False
         
 class TapeUnit(BoxLayout):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, index, *args, **kwargs):
         super(TapeUnit, self).__init__(*args, **kwargs)
         self.orientation = 'vertical'
         self.cell = TapeCell()
         self.add_widget(self.cell)
         self.label = TapeLabel()
         self.add_widget(self.label)
+        self.size_hint = (None, 1)
+        self.index = index
+        self.width = globvars.AllItems['application'].width / 18
+        self.label.font_size = globvars.AllItems['application'].width / 48
+        self.cell.font_size = globvars.AllItems['application'].width / 48
+        self.cell.padding_x = globvars.AllItems['application'].width / 48
+        self.pos = (self.width * self.index, 0)
+        globvars.AllItems['application'].bind(width=self.set_width)
+        
+    def set_width(self, instance, width):
+        self.width = width / 18
+        self.pos = (self.width * self.index, 0)
+        self.label.font_size = width / 48
+        self.cell.font_size = width / 48
+        self.cell.padding_x = width / 48
+        if ((len(self.label.text)) > 4):
+            self.label.font_size = width / (12 * (len(self.label.text)))
         
     def move(self, dx):
         self.pos = (self.x + dx, self.y)
@@ -50,7 +67,8 @@ class TapeUnit(BoxLayout):
         
     def set_info(self, text, value):
         text = str(text)
-        self.label.font_size = min(80 / len(text), 20)
+        width = globvars.AllItems['application'].width / 12
+        self.label.font_size = min(width / len(text), width / 4)
         self.label.text = text
         if value == "_":
             value = ""
@@ -80,14 +98,18 @@ class Tape(FloatLayout):
         self.numcells = 0
         self.selected = 0
         self.allowedits = True
-        self.cellwidth = TapeUnit().width
+        self.cellwidth = 0
         self.tape = []
         self.savetape = []
         self.outofbounds = False
         globvars.AllItems['tape'] = self
+        globvars.AllItems['application'].bind(width=self.set_width)
+        
+    def set_width(self, instance, width):
+        self.cellwidth = width / 18
         
     def make_cell(self):
-        self.cells.append(TapeUnit(pos = (self.x + self.cellwidth * self.numcells, self.y)))
+        self.cells.append(TapeUnit(index = self.numcells))
         self.add_widget(self.cells[-1])
         
     def do_layout(self, *args, **kwargs):

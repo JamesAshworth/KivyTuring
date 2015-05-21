@@ -1,58 +1,36 @@
 #:kivy 1.0.9
 
-<Button>:
-    width: 60
-    size_hint: None, 1
-    font_size: 10
+<ToolbarButton>:
     halign: 'center'
+    valign: 'middle'
 
 <ControlLabel>:
-    size_hint: 1, 1
-    font_size: 40
+    text_size: self.size
     color: [0, 0, 0, 1]
+    halign: 'center'
+    valign: 'middle'
     
 <ReloadMachineLabel>:
-    text_size: self.size
-    padding: -20, -20
     halign: 'right'
     valign: 'top'
-    
-<Toolbar>:
-    size_hint: 1, None
-    height: 60
-    
-<TapeCell>:
-    font_size: 20
-    padding: [5, ( self.height - self.line_height ) / 2]
+    padding: (20, 20)
     
 <TapeLabel>:
-    font_size: 20
     halign: 'center'
     valign: 'middle'
     
-<TapeBar>:
-    height: 100
-    size_hint: 1, None
+<TapeCell>:
+    padding_y: ( self.height - self.line_height ) / 2
     
 <StateLabel>:
-    font_size: 20
     halign: 'center'
     valign: 'middle'
     color: [0, 0, 0, 1]
     
-<SpacedContent>:
-    size_hint: 1, None
-    height: 30
-    
 <RotateLabel>:
-    font_size: 20
     halign: 'center'
     valign: 'top'
     color: [0, 0, 0, 1]
-    
-<TapeUnit>:
-    width: 50
-    size_hint: None, 1
     
 <StartScreen>:
     canvas.before:

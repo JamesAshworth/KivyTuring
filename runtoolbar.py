@@ -2,7 +2,7 @@ from kivy.app import App
 from kivy.clock import Clock
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.slider import Slider
-from buttons import ExtendButton, StickyButton, SwitchButton, Spacer
+from buttons import ToolbarButton, StickyButton, SwitchButton, Spacer
 from logicthread import LogicThread
 import globvars
 import logic

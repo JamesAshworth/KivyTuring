@@ -9,6 +9,7 @@ import globvars
 class Application(ScreenManager):
     def __init__(self, *args, **kwargs):
         super(Application, self).__init__(*args, **kwargs)
+        globvars.AllItems['application'] = self
         screen = Screen(name = "menu")
         startScreen = StartScreen()
         screen.add_widget(startScreen)
@@ -17,7 +18,6 @@ class Application(ScreenManager):
         screen = Screen(name = "machine")
         screen.add_widget(MachineScreen())
         self.add_widget(screen)
-        globvars.AllItems['application'] = self
         
 class TuringApp(App):
     def open_settings(self, *largs):

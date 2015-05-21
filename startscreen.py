@@ -15,6 +15,10 @@ class ControlLabel(Button):
         self.background_normal = ""
         self.background_down = ""
         self.background_disabled_normal = ""
+        globvars.AllItems['application'].bind(width=self.set_width)
+        
+    def set_width(self, instance, width):
+        self.font_size = width / 25
         
 class NewMachineLabel(ControlLabel):
     def __init__(self, *args, **kwargs):
