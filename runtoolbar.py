@@ -34,6 +34,11 @@ class SpeedSlider(Slider):
         super(SpeedSlider, self).__init__(*args, **kwargs)
         self.bind(value=self.update_speed)
         self.max = 9
+        self.size_hint = (None, 1)
+        globvars.AllItems['application'].bind(width=self.set_width)
+        
+    def set_width(self, instance, width):
+        self.width = width / 3.75
         
     def update_speed(self, instance, value):
         position = int(round(self.value))
@@ -132,7 +137,9 @@ class RunToolbar(BoxLayout):
         self.add_widget(ResetButton(text = "Reset"))
         self.add_widget(CompletionButton(text = "Run\nto\nFinish"))
         self.add_widget(Spacer())
+        self.add_widget(Spacer())
         self.add_widget(SpeedSlider())
+        self.add_widget(Spacer())
         self.add_widget(Spacer())
 
 # DEBUG SECTION
