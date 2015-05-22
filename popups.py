@@ -220,6 +220,7 @@ class FileChooser(CommonPopup):
         self.title = "Choose file"
         filechooser = FileChooserListView(filters=['*.xml'], filter_dirs=True, path="./")
         filechooser.bind(selection=self.on_select)
+        self.entry.size_hint = (1, 1)
         self.entry.add_widget(filechooser)
         self.buttonholder.remove_widget(self.button)
         self.content.remove_widget(self.message)
