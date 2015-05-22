@@ -10,6 +10,17 @@ from kivy.uix.widget import Widget
 from kivy.uix.button import Button
 from os.path import isfile
 import globvars
+
+class PopupButton(Button):
+    def __init__(self, *args, **kwargs):
+        super(PopupButton, self).__init__(*args, **kwargs)
+        self.size_hint = (None, None)
+        self.set_width(None, globvars.AllItems['application'].width)
+        globvars.AllItems['application'].bind(width=self.set_width)
+        
+    def set_width(self, instance, width):
+        self.size = (width / 5, width / 30)
+        self.font_size = width / 60
         
 class SpacedContent(BoxLayout):
     def __init__(self, *args, **kwargs):
@@ -33,8 +44,8 @@ class CommonPopup(Popup):
         self.feedback = Label(size_hint = (1, None), valign = 'top', halign = 'center')
         self.feedback.bind(size = self.feedback.setter('text_size')) 
         self.buttonholder = SpacedContent(size_hint = (1, None))
-        self.button = Button()
-        self.cancel = Button(text = "Cancel")
+        self.button = PopupButton()
+        self.cancel = PopupButton(text = "Cancel")
         self.buttonholder.add_widget(self.button)
         self.buttonholder.add_widget(self.cancel)
         self.button.bind(on_press=self.dismiss)
