@@ -223,7 +223,12 @@ class FileChooser(CommonPopup):
         self.entry.add_widget(filechooser)
         self.buttonholder.remove_widget(self.button)
         self.content.remove_widget(self.message)
+        self.content.remove_widget(self.entry)
         self.content.remove_widget(self.feedback)
+        self.content.remove_widget(self.buttonholder)
+        self.content = BoxLayout(orientation='vertical')
+        self.content.add_widget(self.entry)
+        self.content.add_widget(self.buttonholder)
         
     def on_select(self, instance, selection):
         self.continuer(filename = selection[0])
