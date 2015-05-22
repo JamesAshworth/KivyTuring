@@ -17,7 +17,9 @@ from undo import *
 def create_state(x, y, name = None):
     if statefuncs.collide_state(x, y):
         return None
-    state = State(pos = (x - 25, y - 25))
+    if globvars.AllItems['stateSize'] == 0:
+        globvars.AllItems['stateSize'] = (min(globvars.AllItems['application'].width, globvars.AllItems['application'].height) / 12)
+    state = State(pos = (x - (globvars.AllItems['stateSize'] / 2), y - (globvars.AllItems['stateSize'] / 2)))
     globvars.AllItems['stateMachine'].add_widget(state)
     globvars.AllItems['states'].append(state)
     if name is not None:
@@ -35,16 +37,24 @@ def create_transition(startstate, endstate, info, x, y):
     return t
 
 class StateLabel(Label):
-    pass
+    def __init__(self, *args, **kwargs):
+        super(StateLabel, self).__init__(*args, **kwargs)
+        self.font_size = globvars.AllItems['stateSize'] / 3
     
 class RotateLabel(Label):
-    pass
+    def __init__(self, *args, **kwargs):
+        super(RotateLabel, self).__init__(*args, **kwargs)
+        self.size_hint = (None, None)
+        self.size = (globvars.AllItems['stateSize'], globvars.AllItems['stateSize'])
+        self.font_size = globvars.AllItems['stateSize'] / 3
     
 class TransitionInfo(ScatterLayout):
     def __init__(self, *args, **kwargs):
         super(TransitionInfo, self).__init__(*args, **kwargs)
         self.label = RotateLabel()
         self.add_widget(self.label)
+        self.size_hint = (None, None)
+        self.size = (globvars.AllItems['stateSize'], globvars.AllItems['stateSize'])
         
     def update_info(self, text):
         text += "\n\n"
@@ -65,7 +75,7 @@ class TransitionInfo(ScatterLayout):
 
 class TransitionGrabber(Widget):
     def update(self):
-        gs = globvars.AllItems['gs']
+        gs = globvars.AllItems['stateSize'] / 2
         self.canvas.clear()
         self.canvas.add(Color(0, 1, 0))
         self.canvas.add(Rectangle(size = (gs / 2, gs / 2), pos = (self.x + gs / 4, self.y + gs / 4)))
@@ -73,11 +83,10 @@ class TransitionGrabber(Widget):
 class Transition(Widget):
     def __init__(self, *args, **kwargs):
         super(Transition, self).__init__(*args, **kwargs)
-        gs = globvars.AllItems['gs']
         self.startpoint = None
         self.startstate = None
         self.midpoint   = TransitionGrabber()
-        self.info       = TransitionInfo(size = (60, 60), size_hint = (None, None))
+        self.info       = TransitionInfo()
         self.endpoint   = None
         self.endstate   = None
         self.display    = True
@@ -102,7 +111,7 @@ class Transition(Widget):
             return False
         if touch.ud['mode'] != "create_t":
             return True
-        gs = globvars.AllItems['gs']
+        gs = globvars.AllItems['stateSize'] / 2
         if self.complete:
             self.midpoint.pos = [touch.x - gs / 2, touch.y - gs / 2]
         else:
@@ -135,7 +144,7 @@ class Transition(Widget):
             
     def finish_transition(self, resetMidpoint = True):
         if resetMidpoint:
-            gs = globvars.AllItems['gs']
+            gs = globvars.AllItems['stateSize'] / 2
             self.complete = True
             self.startpoint = [self.startstate.center_x, self.startstate.center_y]
             self.endpoint = [self.endstate.center_x, self.endstate.center_y]
@@ -183,7 +192,6 @@ class Transition(Widget):
         return self.find_point_on_line(0.5)
         
     def direction_triangle(self):
-        gs = globvars.AllItems['gs']
         fpoint = self.line_middle()
         if self.startstate == self.endstate:
             dx = fpoint[1] - self.startpoint[1] 
@@ -263,12 +271,13 @@ class Transition(Widget):
         
     def update(self):
         pd = globvars.AllItems['linethickness']
+        gs = globvars.AllItems['stateSize'] / 2
         self.canvas.clear()
         self.canvas.add(self.linecolour)
         self.canvas.add(Line(bezier = self.startpoint + self.midpoints_calc() + self.endpoint, width = pd))
         centre = self.line_middle()
         self.canvas.add(Triangle(center = (centre[0] - 10, centre[1] - 10), points = self.direction_triangle()))
-        self.info.pos = (centre[0] - 30, centre[1] - 30)
+        self.info.pos = (centre[0] - gs, centre[1] - gs)
         self.info.set_rotation(self.rotation_angle())
         globvars.AllItems['stateMachine'].remove_widget(self.midpoint)
         if self.display:
@@ -276,7 +285,7 @@ class Transition(Widget):
             globvars.AllItems['stateMachine'].add_widget(self.midpoint)
             
     def midpoints_calc(self):
-        gs = globvars.AllItems['gs']
+        gs = globvars.AllItems['stateSize'] / 2
         midpoints = [self.midpoint.x + (gs / 2), self.midpoint.y + (gs / 2)]
         if self.startstate != self.endstate:
             return midpoints
@@ -317,7 +326,7 @@ class Transition(Widget):
         globvars.AllItems['transitions'].remove(self)
 
     def check_touch(self, touch):
-        gs = globvars.AllItems['gs']
+        gs = globvars.AllItems['stateSize'] / 2
         if touch.x < self.midpoint.x:
             return False
         if touch.x >= self.midpoint.x + gs:
@@ -332,8 +341,8 @@ class Transition(Widget):
 class State(Widget):
     def __init__(self, *args, **kwargs):
         super(State, self).__init__(*args, **kwargs)
-        self.size_hint = None, None
-        self.size = 50, 50
+        self.size_hint = (None, None)
+        self.size = (globvars.AllItems['stateSize'], globvars.AllItems['stateSize'])
         self.colours = [Color(1, 1, 1, 0), Color(0, 0, 0), Color(1, 1, 1), Color(1, 1, 1), Color(1, 1, 1)]
         self.final = False
         self.start = False

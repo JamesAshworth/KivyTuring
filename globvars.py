@@ -4,7 +4,6 @@ def create():
     AllItems['states'] = []
     AllItems['transitions'] = []
     AllItems['linethickness'] = 2
-    AllItems['gs'] = 20 #grabber size
     AllItems['alphabet'] = ""
     AllItems['reservedCharacters'] = "/"
     AllItems['moverDisplayModes'] = ["create_t", "edit", "delete"]
@@ -15,3 +14,4 @@ def create():
     AllItems['animationStep'] = 0.05
     AllItems['inStep'] = False
     AllItems['undoDisabled'] = False
+    AllItems['stateSize'] = 0

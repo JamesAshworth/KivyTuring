@@ -92,8 +92,8 @@ def _load_machine(filename):
             if (read in alphabetstring) and (write in alphabetstring) and (move in "LR"):
                 info = read + "/" + write + "/" + move
                 try:
-                    x = float(xmltran.attrib['x']) - globvars.AllItems['gs'] / 2
-                    y = float(xmltran.attrib['y']) - globvars.AllItems['gs'] / 2
+                    x = float(xmltran.attrib['x']) - globvars.AllItems['stateSize'] / 4
+                    y = float(xmltran.attrib['y']) - globvars.AllItems['stateSize'] / 4
                 except:
                     x, y = None, None
             
