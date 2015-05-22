@@ -258,8 +258,8 @@ class FileOverwriter(CommonPopup):
         self.feedback.text = ("If you continue, you could lose information from %s.\nAre you sure you wish to continue?" % filename.replace('.xml~', ''))
         self.button.text = "Continue"
         # Assemble the popup
-        self.content.add_widget(self.feedback)
-        self.content.add_widget(self.buttonholder)
+        self.content.remove_widget(self.message)
+        self.content.remove_widget(self.entry)
     
     def post_process(self, instance):
         self.deleter(self.filename)
