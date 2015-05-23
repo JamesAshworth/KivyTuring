@@ -33,7 +33,7 @@ class Application(BoxLayout):
         self.add_widget(_Application())
         self.keyboardSpacer = Widget(size_hint = (1, None), height = 0)
         self.add_widget(self.keyboardSpacer)
-        self.trigger_keyboard_height = Clock.schedule_interval(self._upd_kbd_height, .5)
+        Clock.schedule_interval(self._upd_kbd_height, .5)
 
     def _upd_kbd_height(self, *kargs):
         self.keyboardSpacer.height = self._get_kheight()
