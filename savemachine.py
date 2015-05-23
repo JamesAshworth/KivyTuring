@@ -1,4 +1,5 @@
 import xml.etree.ElementTree as ET
+from popups import InfoBox
 import statefuncs
 import globvars
 
@@ -22,6 +23,7 @@ def indent(elem, level=0):
 def save_machine(auto = True):
     if not auto:
         _save_machine(globvars.AllItems['saveFile'])
+        InfoBox(title="Save Complete", message="Machine saved to: " + globvars.AllItems['saveFile']).open()
     _save_machine(globvars.AllItems['saveFile'] + "~")
 
 def _save_machine(filename):
