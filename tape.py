@@ -227,6 +227,12 @@ class Tape(FloatLayout):
     def on_touch_move(self, touch):
         if self.outofbounds:
             return False
+        for cell in self.cells:
+            if cell.collide_point(touch.x, touch.y):
+                touch.ud['last'] = touch.x
+                touch.ud['leftmost'] = self.leftmost
+                cell.on_touch_down(touch)
+                return False
         self.move_cells(touch)
         
     def reset_position(self):
