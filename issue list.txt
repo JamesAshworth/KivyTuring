@@ -4,8 +4,8 @@
     2)      Popups could be larger perhaps, and the buttons on them are quite small. It's workable as is though
     FIXED:  Popups now fullscreen. Buttons now change size with the screen
 
-3)      Keyboard covers the tape when editing it. I'm not certain what we could/should do about that if anything
-
+    3)      Keyboard covers the tape when editing it. I'm not certain what we could/should do about that if anything
+    FIXED:  Disassembled kivy.core.window for 1.9.0 to get keyboard height and change window size to match
 
     4)      The build toolbar images don't load. The buttons work but the images don't appear
     FIXED:  The Resources folder had a capital in it and the image paths don't. This wasn't an issue in PC testing but was an issue on the pendo pad. renaming the resources folder to be lower case solved the issue
