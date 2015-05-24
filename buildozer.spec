@@ -1,13 +1,13 @@
 [app]
 
 # (str) Title of your application
-title = Turing Sim
+title = TM Simulator
 
 # (str) Package name
-package.name = turingsim
+package.name = KivyTuring
 
 # (str) Package domain (needed for android/ios packaging)
-package.domain = org.monash.fit3140
+package.domain = org.test
 
 # (str) Source code where the main.py live
 source.dir = .
@@ -19,17 +19,17 @@ source.include_exts = py,png,jpg,kv,atlas
 #source.exclude_exts = spec
 
 # (list) List of directory to exclude (let empty to not exclude anything)
-source.exclude_dirs = doc
+#source.exclude_dirs = tests, bin
 
 # (list) List of exclusions using pattern matching
 #source.exclude_patterns = license,images/*/*.jpg
 
 # (str) Application versioning (method 1)
-#version.regex = __version__ = ['"](.*)['"]
-#version.filename = %(source.dir)s/main.py
+version.regex = __version__ = ['"](.*)['"]
+version.filename = /home/fit3140/KivyTuring/main.py
 
 # (str) Application versioning (method 2)
-version = 1.0
+# version = 1.2.0
 
 # (list) Application requirements
 # comma seperated e.g. requirements = sqlite3,kivy
