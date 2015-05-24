@@ -11,7 +11,7 @@
     FIXED:  The Resources folder had a capital in it and the image paths don't. This wasn't an issue in PC testing but was an issue on the pendo pad. renaming the resources folder to be lower case solved the issue
 
     5)      One instance of the progress window remaining after completion when running to finish. This was the first use of it. Since then it has worked fine
-    UNREPRODUCIBLE
+    UNREPRODUCIBLE, Most likely caused by lag on the pendo pad
 
     6)      Reopen option isn't working. I think it is simply outside the screen. I can see a line that I think is the tail of the p
     FIXED:  Padding is resolved in different ways on android and windows - fixed to be broken on windows instead
@@ -38,10 +38,10 @@
 
 
     13)     Why does the machine completion text have a cancel button? It seems pointless
-    UNREPRODUCIBLE
+    UNREPRODUCIBLE, It is no longer present, I don't know when it was removed.
 
     14)     Hitting run to finish while running causes the app to crash. This is the case on PC as well as android
-    UNREPRODUCIBLE
+    UNREPRODUCIBLE, No longer the case
 
 Changes made to get it running:
 Added "__version__ = '1.8'" to main.py
