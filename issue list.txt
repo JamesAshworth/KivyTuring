@@ -19,8 +19,8 @@
     7)      Delete machine popup says Load file
     FIXED:  Delete machine and load machine now say choose file
 
-7.1)    Delete machine could maybe do with a confirmation popup
-
+    7.1)    Delete machine could maybe do with a confirmation popup
+    FIXED:  Delete machine now has a confirmation popup and a success notification
 
     8)      It'd be good to have some kinda save notification
     FIXED:  Save notification added

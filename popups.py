@@ -212,12 +212,27 @@ class ErrorBox(InfoBox):
     def __init__(self, message, *args, **kwargs):
         super(ErrorBox, self).__init__(message=message, title="Error", *args, **kwargs)
         
+class ConfirmDeleteBox(CommonPopup):
+    def __init__(self, proc, filename, *args, **kwargs):
+        super(ConfirmDeleteBox, self).__init__(*args, **kwargs)
+        self.continuer = proc
+        self.filename = filename
+        self.title = "Confirm Deletion"
+        self.message.text = "Are you sure you wish to delete:\n" + filename + "?"
+        self.button.text = "Yes"
+        self.cancel.text = "No"
+        self.content.remove_widget(self.entry)
+        self.content.remove_widget(self.feedback)
+        
+    def post_process(self, instance):
+        self.continuer(filename = self.filename)
+        
 class FileChooser(CommonPopup):
-    def __init__(self, proc, *args, **kwargs):
+    def __init__(self, proc, confirmDelete = False, *args, **kwargs):
         super(FileChooser, self).__init__(*args, **kwargs)
         self.continuer = proc
-        self.auto_dismiss = False
-        self.title = "Choose file"
+        self.confirmDelete = confirmDelete
+        self.title = "Choose File"
         filechooser = FileChooserListView(filters=['*.xml'], filter_dirs=True, path="./")
         filechooser.bind(selection=self.on_select)
         self.entry.size_hint = (1, 1)
@@ -232,7 +247,10 @@ class FileChooser(CommonPopup):
         self.content.add_widget(self.buttonholder)
         
     def on_select(self, instance, selection):
-        self.continuer(filename = selection[0])
+        if self.confirmDelete:
+            ConfirmDeleteBox(proc = self.continuer, filename = selection[0]).open()
+        else:
+            self.continuer(filename = selection[0])
         self.dismiss()
 
 class FileNamer(CommonPopup):
