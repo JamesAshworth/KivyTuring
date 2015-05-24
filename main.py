@@ -11,6 +11,20 @@ from kivy.utils import platform
 from kivy.clock import Clock
 import globvars
 
+if platform == 'android':
+    from jnius import autoclass, cast
+
+    context = autoclass('org.renpy.android.PythonActivity').mActivity    
+    Uri = autoclass('android.net.Uri')
+    Intent = autoclass('android.content.Intent')
+
+    def open_url(url):
+        intent = Intent()
+        intent.setAction(Intent.ACTION_VIEW)
+        intent.setData(Uri.parse(url))
+        currentActivity = cast('android.app.Activity', context)
+        currentActivity.startActivity(intent)
+    
 android = None
 
 class _Application(ScreenManager):
@@ -51,7 +65,8 @@ class Application(BoxLayout):
         
 class TuringApp(App):
     def open_settings(self, *largs):
-        pass
+        if platform == 'android':
+            open_url("./README.html")
         
     def build(self):
         return Application()
