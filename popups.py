@@ -225,7 +225,7 @@ class ConfirmDeleteBox(CommonPopup):
         self.content.remove_widget(self.feedback)
         
     def post_process(self, instance):
-        self.continuer(filename = self.filename)
+        self.continuer(filename = self.filename, silentDeletion = False)
         
 class FileChooser(CommonPopup):
     def __init__(self, proc, confirmDelete = False, *args, **kwargs):

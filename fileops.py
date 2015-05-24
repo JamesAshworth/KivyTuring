@@ -33,14 +33,15 @@ def load_file(filename = '', overwrite = True):
     if complete:
         move_to_machine()
 
-def delete_file(filename = ''):
+def delete_file(filename = '', silentDeletion = True):
     if filename == '':
         FileChooser(delete_file, confirmDelete = True).open()
         return
     os.remove(filename)
     if os.path.isfile(filename + '~'):
         os.remove(filename + '~')
-    InfoBox(title="Delete Complete", message=filename + " deleted successfully").open()
+    if not silentDeletion:
+        InfoBox(title="Delete Complete", message=filename + " deleted successfully").open()
     globvars.AllItems['refreshLabel']()
     
 def new_file(filename = '', overwrite = True):
