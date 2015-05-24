@@ -22,6 +22,7 @@ class ToolbarButton(Button):
         super(ToolbarButton, self).__init__(*args, **kwargs)
         self.size_hint = (None, 1)
         globvars.AllItems['application'].bind(width=self.set_width)
+        self.border = [0, 0, 0, 0]
         
     def set_width(self, instance, width):
         self.width = width / 15
