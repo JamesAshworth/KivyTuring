@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head><style>
-h1, h2, h3, h4 { color: blue }
-p {text-indent: 35px }
+h1, h2, h3, h4 { color: blue; }
+p {text-indent: 35px; }
+td, tr, img  { padding: 0px; margin: 0px; border: none; }
+td { text-align: center; height: 59px; font-size: 80%; }
+table { border-collapse: collapse; }
 </style></head>
 
 <h1>Turing Machine Simulator App</h1>
@@ -51,7 +54,42 @@ p {text-indent: 35px }
     </ul>
 </ul>
 <h3><a name="Build Screen"/>The Build Screen</h3>
-<img src='./buildtoolbar.png'/>
+<table>
+<tr>
+<td><img src="./resources/menu_button.png"/></td>
+<td><img src="./resources/spacer.png"/></td>
+<td><img src="./resources/move_button.png"/></td>
+<td><img src="./resources/state_button.png"/></td>
+<td><img src="./resources/transition_button.png"/></td>
+<td><img src="./resources/delete_button.png"/></td>
+<td><img src="./resources/start_button.png"/></td>
+<td><img src="./resources/final_button.png"/></td>
+<td><img src="./resources/alphabet_button.png"/></td>
+<td><img src="./resources/spacer.png"/></td>
+<td><img src="./resources/undo_button.png"/></td>
+<td><img src="./resources/save_button.png"/></td>
+<td><img src="./resources/redo_button.png"/></td>
+<td><img src="./resources/spacer.png"/></td>
+<td><img src="./resources/run_button.png"/></td>
+</tr>
+<tr>
+<td><a href="#Menu Button">Menu</a></td>
+<td/>
+<td><a href="#Move Button">Move</a></td>
+<td><a href="#State Button">States</a></td>
+<td><a href="#Transition Button">Transitions</a></td>
+<td><a href="#Delete Button">Delete</a></td>
+<td><a href="#Start State Button">Start<br/>State</a></td>
+<td><a href="#Final State Button">Final<br/>States</a></td>
+<td><a href="#Define Alphabet Button">Alphabet</a></td>
+<td/>
+<td><a href="#Undo Button">Undo</a></td>
+<td><a href="#Save Button">Save</a></td>
+<td><a href="#Redo Button">Redo</a></td>
+<td/>
+<td><a href="#Run Screen Button">Run</a></td>
+</tr>
+</table>
 <ul>
     <h4><a name="Menu Button"/>Returning to the Main Menu</h4>
     <p>Pressing the 'Menu' button will return you to the <a href="#Menu Screen">'Menu Screen'</a>. In addition to the four options already listed, there will now be a button in the top right-hand corner allowing you to reopen the last machine that you were editing.</p>
@@ -112,10 +150,39 @@ p {text-indent: 35px }
     <p>Pressing the 'Run' button will move to the <a href="#Run Screen">'Run Screen'</a>, assuming that there is a minimum of one state. The canvas will be centered on the start state.</p>
 </ul>
 <h3><a name="Run Screen"/>The Run Screen</h3>
-<img src='./runtoolbar.png'/>
+<table>
+<tr>
+<td><img src="./resources/build_button.png"/></td>
+<td><img src="./resources/spacer.png"/></td>
+<td><img src="./resources/step_back_button.png"/></td>
+<td><img src="./resources/step_button.png"/></td>
+<td><img src="./resources/run_button.png"/></td>
+<td><img src="./resources/pause_button.png"/></td>
+<td><img src="./resources/reset_button.png"/></td>
+<td><img src="./resources/run_to_finish_button.png"/></td>
+<td><img src="./resources/spacer.png"/></td>
+<td><img src="./resources/slider.png"/></td>
+<td><img src="./resources/spacer.png"/></td>
+</tr>
+<tr>
+<td><a href="#Build Screen Button">Build</a></td>
+<td/>
+<td><a href="#Step Back Button">Step<br/>Back</a></td>
+<td><a href="#Step Button">Step</a></td>
+<td><a href="#Run Button">Run</a></td>
+<td><a href="#Pause Button">Pause</a></td>
+<td><a href="#Reset Button">Reset</a></td>
+<td><a href="#Finish Button">Run<br/>to<br/>Finish</a></td>
+<td/>
+<td><a href="#Speed Slider">Speed</a></td>
+<td/>
+</tr>
+</table>
 <ul>
     <h4><a name="Build Screen Button"/>Moving to Build</h4>
     <p>Pressing the 'Build' button will end the simulation, reset the tape, and move to the <a href="#Build Screen">'Build Screen'</a>.</p>
+    <h4><a name="Step Back Button"/>Stepping Backwards</h4>
+    <p>Pressing the 'Step Back' button will cause the simulation to retreat by one transition. It will also end the effects of the <a href="#Run Button">'Run Button'</a>.</p>
     <h4><a name="Step Button"/>Stepping</h4>
     <p>Pressing the 'Step' button will cause the simulation to advance by one transition. It will also end the effects of the <a href="#Run Button">'Run Button'</a>.</p>
     <h4><a name="Run Button"/>Running</h4>
@@ -130,7 +197,20 @@ p {text-indent: 35px }
     <p>Adjusting the 'Speed Slider' will change the speed of animation for graphical simulation. At the lowest speed, the system will run at a maximum of one transition per second. At the highest, that increases to ten transitions per second.</p>
 </ul>
 <h3><a name="Tape"/>The Tape</h3>
-<img src='./tape.png'/>
+<table>
+<tr>
+<td style="height: 95px;"><img src="./resources/reset_tape_button.png"/></td>
+<td style="height: 95px;"><img src="./resources/shift_left_tape_button.png"/></td>
+<td style="height: 95px;"><img src="./resources/tape.png"/></td>
+<td style="height: 95px;"><img src="./resources/shift_right_tape_button.png"/></td>
+</tr>
+<tr>
+<td><a href="#Reset Position">Reset<br/>Tape<br/>Position</a></td>
+<td><a href="#Shift Left">Shift<br/>Tape<br/>Left</a></td>
+<td/>
+<td><a href="#Shift Right">Shift<br/>Tape<br/>Right</a></td>
+</tr>
+</table>
 <ul>
     <h4><a name="Reset Position"/>Reset Tape Position</h4>
     <p>Pressing the 'Reset Tape Position' button will scroll the tape until cell zero is in the default position (left for the <a href="#Build Screen">'Build Screen'</a>, center for the <a href="#Run Screen">'Run Screen'</a>).</p>
@@ -142,8 +222,6 @@ p {text-indent: 35px }
 
 <h2><a name="Bugs"/>Known Bugs / Limitations:</h2>
 <ul>
-    <li>Import Machine not currently implemented</li>
-    <li>Not currently available on Pendo Pad</li>
 </ul>
 
 <p><a href="#Table of Contents">Back to Top</a></p>
