@@ -78,7 +78,7 @@ class StartScreen(GridLayout):
         self.topRow.add_widget(self.loadlabel)
         self.middleRow.add_widget(NewMachineLabel())
         self.middleRow.add_widget(LoadMachineLabel())
-        self.middleRow.add_widget(ImportMachineLabel())
+        #self.middleRow.add_widget(ImportMachineLabel())
         self.middleRow.add_widget(DeleteMachineLabel())
         self.load_label()
         globvars.AllItems['refreshLabel'] = self.load_label
