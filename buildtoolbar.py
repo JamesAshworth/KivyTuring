@@ -47,7 +47,7 @@ class BuildToolbar(BoxLayout):
         globvars.AllItems['undoButton'] = UndoButton(mode = "undo", background_normal = "./resources/undo_button.png", background_disabled_normal = "./resources/undo_button_disabled.png", background_down = "./resources/undo_button_pressed.png")
         globvars.AllItems['redoButton'] = UndoButton(mode = "redo", background_normal = "./resources/redo_button.png", background_disabled_normal = "./resources/redo_button_disabled.png", background_down = "./resources/redo_button_pressed.png")
         # Now we add all of the widgets, mostly anonymous
-        self.add_widget(SwitchButton(mode = "menu", text = "Menu", direction = "right", newmode = "move", button = 'move', target = 'application'))
+        self.add_widget(SwitchButton(mode = "menu", background_normal = "./resources/menu_button.png", background_down = "./resources/menu_button_pressed.png", direction = "right", newmode = "move", button = 'move', target = 'application'))
         self.add_widget(Spacer())
         self.add_widget(globvars.AllItems['move'])
         self.add_widget(MachineButton(mode = "create_s", background_normal = "./resources/state_button.png", background_down = "./resources/state_button_pressed.png"))
@@ -61,7 +61,7 @@ class BuildToolbar(BoxLayout):
         self.add_widget(SaveButton(background_normal = "./resources/save_button.png", background_down = "./resources/save_button_pressed.png"))
         self.add_widget(globvars.AllItems['redoButton'])
         self.add_widget(Spacer())
-        self.add_widget(SwitchButton(mode = "run", text = "Run", direction = "left", newmode = "run", button = None, target = 'toolbar'))
+        self.add_widget(SwitchButton(mode = "run", background_normal = "./resources/run_button.png", background_down = "./resources/run_button_pressed.png", direction = "left", newmode = "run", button = None, target = 'toolbar'))
 
 # DEBUG SECTION
 class TuringApp(App):

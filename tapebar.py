@@ -21,14 +21,14 @@ class ShiftButton(ToolbarButton):
 class Tapebar(BoxLayout):
     def __init__(self, *args, **kwargs):
         super(Tapebar, self).__init__(*args, **kwargs)
-        self.add_widget(ResetButton(text = "Reset\nTape\nPosition"))
-        self.add_widget(ShiftButton(direction = -1))
+        self.add_widget(ResetButton(background_normal = "./resources/reset_tape_button.png", background_down = "./resources/reset_tape_button_pressed.png"))
+        self.add_widget(ShiftButton(direction = -1, background_normal = "./resources/shift_left_tape_button.png", background_down = "./resources/shift_left_tape_button_pressed.png"))
         screen = Screen()
         screen.add_widget(Tape())
         sm = ScreenManager()
         sm.add_widget(screen)
         self.add_widget(sm)
-        self.add_widget(ShiftButton(direction = +1))
+        self.add_widget(ShiftButton(direction = +1, background_normal = "./resources/shift_right_tape_button.png", background_down = "./resources/shift_right_tape_button_pressed.png"))
         self.size_hint = (1, None)
         globvars.AllItems['application'].bind(width=self.set_height)
         
