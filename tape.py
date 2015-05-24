@@ -24,6 +24,7 @@ class TapeCell(AlphabetTextInput):
         
     def on_touch_down(self, touch):
         super(TapeCell, self).on_touch_down(touch)
+        self.select_all()
         self.focus = globvars.AllItems['tape'].allowedits
         
 class TapeLabel(Label):
