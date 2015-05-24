@@ -228,6 +228,12 @@ class Transition(Widget):
         self.highlighted(True)
         Clock.schedule_interval(self.do_move_along_line, 0.05)
         
+    def move_back_along_line(self):
+        globvars.AllItems['movementClock'] = self.do_move_back_along_line
+        self.highlighted(True)
+        self.alongline = 1
+        Clock.schedule_interval(self.do_move_back_along_line, 0.05)
+        
     def find_point_on_line(self, a):
         p = self.midpoints_calc()
         z = (1 - a)
@@ -257,6 +263,24 @@ class Transition(Widget):
         self.update()
         globvars.AllItems['inStep'] = False
         logic.do_run()
+        return False
+        
+    def do_move_back_along_line(self, instance):
+        old = self.find_point_on_line(self.alongline)
+        self.alongline -= globvars.AllItems['animationStep']
+        if self.alongline < 0:
+            self.alongline = 0
+        new = self.find_point_on_line(self.alongline)
+        statefuncs.move_all(old[0] - new[0], old[1] - new[1])
+        if self.alongline <= 0.25:
+            self.startstate.highlighted(True)
+        if self.alongline <= 0.75:
+            self.endstate.highlighted(False)
+        if self.alongline > 0:
+            return True
+        self.highlighted(False)
+        self.update()
+        globvars.AllItems['inStep'] = False
         return False
         
     def rotation_angle(self):

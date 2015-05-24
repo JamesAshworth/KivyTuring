@@ -7,6 +7,8 @@ def begin_simulation():
     globvars.AllItems['simState'] = statefuncs.find_start_and_centre()
     globvars.AllItems['simState'].highlighted(True)
     globvars.AllItems['simCell'] = 0
+    globvars.AllItems['simTransitions'] = []
+    globvars.AllItems['stepBackButton'].disabled = True
     globvars.AllItems['tape'].select_cell(0)
     globvars.AllItems['tape'].save_values()
     globvars.AllItems['tape'].allowedits = False
@@ -28,6 +30,8 @@ def do_step():
                 globvars.AllItems['simCell'] += t.move_value()
                 globvars.AllItems['tape'].select_cell(globvars.AllItems['simCell'])
                 t.move_along_line()
+                globvars.AllItems['simTransitions'].append(t)
+                globvars.AllItems['stepBackButton'].disabled = False
                 globvars.AllItems['simState'] = t.endstate
                 return
             
@@ -37,6 +41,19 @@ def do_step():
         InfoBox(title="Complete", message="Simulation halted with answer 'Yes'").open()
     else:
         InfoBox(title="Complete", message="Simulation halted with answer 'No'").open()
+        
+def do_step_back():
+    if globvars.AllItems['inStep']:
+        return
+    globvars.AllItems['inStep'] = True
+    t = globvars.AllItems['simTransitions'].pop()
+    t.move_back_along_line()
+    globvars.AllItems['simCell'] -= t.move_value()
+    globvars.AllItems['tape'].select_cell(globvars.AllItems['simCell'])
+    globvars.AllItems['tape'].set_value(globvars.AllItems['simCell'], t.read_value(), undoPossible = False)
+    globvars.AllItems['simState'] = t.startstate
+    if not len(globvars.AllItems['simTransitions']):
+        globvars.AllItems['stepBackButton'].disabled = True
     
 def end_simulation():
     globvars.AllItems['simState'] = None

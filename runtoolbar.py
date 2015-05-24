@@ -23,6 +23,21 @@ class StepButton(StickyButton):
         logic.do_step()
         
 #----------------------------------------------------------
+# Name: StepBackButton
+# 
+# Button to do one step back on the machine while running
+# Acts as if pause has been pressed as well, to stop the
+# machine if it is running
+#----------------------------------------------------------
+class StepBackButton(StickyButton):
+    def on_press(self):
+        super(StepBackButton, self).on_press()
+        # Sticky buttons leave themselves selected on press, so we deselect
+        self.selected(False)
+        globvars.AllItems['running'] = False
+        logic.do_step_back()
+        
+#----------------------------------------------------------
 # Name: SpeedSlider
 # 
 # Slider widget used to adjust the speed of animation (and
@@ -38,7 +53,7 @@ class SpeedSlider(Slider):
         globvars.AllItems['application'].bind(width=self.set_width)
         
     def set_width(self, instance, width):
-        self.width = width / 3.75
+        self.width = width / 3
         
     def update_speed(self, instance, value):
         position = int(round(self.value))
@@ -128,18 +143,18 @@ class RunToolbar(BoxLayout):
         super(RunToolbar, self).__init__(*args, **kwargs)
         # These buttons need to be accessible externally, so we'll explicitly store references to them in the global area
         globvars.AllItems['pauseButton'] = PauseButton(text = "Pause")
+        globvars.AllItems['stepBackButton'] = StepBackButton(text = "Step\nBack")
         # Now we add all of the widgets, mostly anonymous
         self.add_widget(BuildButton(mode = "build", text = "Build", direction = "right", newmode = "move", button = 'move', target = 'toolbar'))
         self.add_widget(Spacer())
+        self.add_widget(globvars.AllItems['stepBackButton'])
         self.add_widget(StepButton(text = "Step"))
         self.add_widget(RunButton(text = "Run"))
         self.add_widget(globvars.AllItems['pauseButton'])
         self.add_widget(ResetButton(text = "Reset"))
         self.add_widget(CompletionButton(text = "Run\nto\nFinish"))
         self.add_widget(Spacer())
-        self.add_widget(Spacer())
         self.add_widget(SpeedSlider())
-        self.add_widget(Spacer())
         self.add_widget(Spacer())
 
 # DEBUG SECTION
