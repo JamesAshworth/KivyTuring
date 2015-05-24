@@ -66,7 +66,7 @@ class Application(BoxLayout):
 class TuringApp(App):
     def open_settings(self, *largs):
         if platform == 'android':
-            open_url("./README.html")
+            open_url("https://dl.dropboxusercontent.com/u/64958166/KivyTuring/README.html")
         
     def build(self):
         return Application()
