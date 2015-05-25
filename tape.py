@@ -18,6 +18,7 @@ class TapeCell(AlphabetTextInput):
             self.background_color = [1, 1, 1, 1]
             
     def on_text(self, instance, value):
+        # Replace blank values with underscores
         if value == "":
             value = "_"
         globvars.AllItems['tape'].set_value(self.parent.get_label(), value)
@@ -25,10 +26,12 @@ class TapeCell(AlphabetTextInput):
     def on_touch_down(self, touch):
         super(TapeCell, self).on_touch_down(touch)
         self.select_all()
+        # If we're not allowed to be editing the cell, we defocus immediately
         self.focus = globvars.AllItems['tape'].allowedits
         
 class TapeLabel(Label):
     def collide_point(self, x, y):
+        # Labels don't exist, for the purposes of clicking
         return False
         
 class TapeUnit(BoxLayout):
@@ -41,11 +44,7 @@ class TapeUnit(BoxLayout):
         self.add_widget(self.label)
         self.size_hint = (None, 1)
         self.index = index
-        self.width = globvars.AllItems['application'].width / 18
-        self.label.font_size = globvars.AllItems['application'].width / 48
-        self.cell.font_size = globvars.AllItems['application'].width / 48
-        self.cell.padding_x = globvars.AllItems['application'].width / 48
-        self.pos = (self.width * self.index, 0)
+        self.set_width(None, globvars.AllItems['application'].width)
         globvars.AllItems['application'].bind(width=self.set_width)
         
     def set_width(self, instance, width):
@@ -93,17 +92,24 @@ class Tape(FloatLayout):
     def __init__(self, *args, **kwargs):
         super(Tape, self).__init__(*args, **kwargs)
         self.cells = []
+        # Default to cell 0 on the far left
         self.leftmost = 0
+        # Zero position refers to the index of cell 0 in the tape list
         self.zeroposition = 0
         self.savezeroposition = 0
+        # The number of cells (and partial cells) displayed on screen
         self.numcells = 0
+        # Default to cell 0 highlighted
         self.selected = 0
         self.allowedits = True
+        # Cell width will be set later
         self.cellwidth = 0
+        # Tape is empty when we first start the app - if a machine is loaded, we'll get a populated tape
         self.tape = []
         self.savetape = []
         self.outofbounds = False
         globvars.AllItems['tape'] = self
+        self.set_width(None, globvars.AllItems['application'].width)
         globvars.AllItems['application'].bind(width=self.set_width)
         
     def set_width(self, instance, width):
